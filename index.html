@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ads Optimizer – Wireframe (Runnable)</title>
+  <link rel="stylesheet" href="assets/css/wireframe.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR NAV -->
+    <aside class="sidebar">
+      <div class="brand">Ads Optimizer</div>
+      <div class="sub">Find wasted spend, fix measurement, scale winners.</div>
+
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#dashboard" data-nav="dashboard" class="active">Dashboard <span class="badge">Today</span></a>
+        <a href="#insights" data-nav="insights">Insights <span class="badge">12</span></a>
+        <a href="#waste" data-nav="waste">Waste Explorer <span class="badge">$2.3k</span></a>
+        <a href="#tracking" data-nav="tracking">Tracking Audit <span class="badge">1 critical</span></a>
+        <a href="#opportunities" data-nav="opportunities">Opportunities <span class="badge">+34 leads</span></a>
+        <a href="#action" data-nav="action">Action Plan <span class="badge">5 tasks</span></a>
+        <a href="#changes" data-nav="changes">Change Log <span class="badge">7</span></a>
+      </nav>
+
+      <div class="divider"></div>
+
+      <div class="muted">Project</div>
+      <div style="margin-top:6px;" class="pill">Nimbus Clinics – UAE</div>
+      <div style="margin-top:8px;" class="muted">Google Ads: <strong>Connected</strong> · Last sync: <strong>2h ago</strong></div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <!-- GLOBAL TOPBAR (stays the same across pages) -->
+      <div class="topbar">
+        <div>
+          <h1 class="title" id="pageTitle">Dashboard</h1>
+          <p class="desc" id="pageDesc">A quick command center for decisions.</p>
+        </div>
+        <div class="controls">
+          <span class="pill">Account: <strong>Search + PMax</strong></span>
+          <select class="input" aria-label="Date range" id="dateRange">
+            <option>Last 7 days</option>
+            <option selected>Last 30 days</option>
+            <option>Last 90 days</option>
+            <option>Custom</option>
+          </select>
+          <input class="input" id="globalSearch" placeholder="Search (e.g., negatives, brand, CPC spike)" />
+          <button class="btn primary" onclick="alert('Wireframe: Refresh would sync + recompute insights.')">Refresh</button>
+        </div>
+      </div>
+      <div id="pages"></div>
+
+      <div class="note">Notes: “Estimated Waste” is model-based. Always review evidence before applying changes.</div>
+
+    </main>
+  </div>
+
+  <script src="assets/js/wireframe.js"></script>
+  <script src="assets/js/partials-loader.js"></script>
+</body>
+</html>

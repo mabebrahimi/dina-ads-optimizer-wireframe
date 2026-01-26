@@ -1,0 +1,92 @@
+<section class="page" id="waste-detail" aria-label="Waste detail page">
+        <div class="card">
+          <div class="row" style="align-items:flex-start; justify-content:space-between;">
+            <div>
+              <div class="h2">Waste Detail</div>
+              <div class="muted">Evidence + exact steps. This is what makes the system trustworthy.</div>
+            </div>
+            <div class="row">
+              <a class="btn" href="#waste" onclick="go('waste')">Back to Explorer</a>
+              <a class="btn primary" href="#action" onclick="go('action')">Add Fix as Task</a>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="item">
+            <strong id="wasteDetailTitle">Item</strong>
+            <div class="muted" id="wasteDetailSummary">Summary will appear here based on selected row.</div>
+            <div class="meta" id="wasteDetailMeta">
+              <span class="tag">Type: Waste</span>
+              <span class="tag">Confidence: 0.80</span>
+              <span class="tag">Est. impact: meaningful</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="h2">Evidence (by campaign + ad group)</div>
+          <table class="table" aria-label="Evidence by campaign and ad group">
+            <thead>
+              <tr>
+                <th>Campaign</th>
+                <th>Ad group</th>
+                <th>Impr.</th>
+                <th>Clicks</th>
+                <th>Spend</th>
+                <th>Leads</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="wasteEvidenceBody">
+              <tr>
+                <td>Core Services</td>
+                <td>Filler – Generic</td>
+                <td>3,210</td>
+                <td>94</td>
+                <td>$176</td>
+                <td>0</td>
+                <td>High clicks, zero leads. User intent looks informational.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="divider"></div>
+
+          <div class="h2">Recommended change</div>
+          <div class="item">
+            <strong id="wasteRecommended">Add negative keyword (phrase)</strong>
+            <div class="muted" id="wasteChangeDetail">Add phrase match negative for the term theme to stop research traffic.</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="h2">Exact items to apply</div>
+          <table class="table" aria-label="Exact items to apply">
+            <thead>
+              <tr>
+                <th>List / scope</th>
+                <th>Item</th>
+                <th>Match</th>
+                <th>Where</th>
+              </tr>
+            </thead>
+            <tbody id="wasteExactItems">
+              <tr>
+                <td>Negative list: Research</td>
+                <td>"what is dermal filler"</td>
+                <td>Phrase</td>
+                <td>Campaign: Core Services · Ad group: Filler – Generic</td>
+              </tr>
+              <tr>
+                <td>Negative list: Research</td>
+                <td>"filler side effects"</td>
+                <td>Phrase</td>
+                <td>Campaign: Core Services · Ad group: Filler – Generic</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="note">This page is the foundation for your “How to do it” guides and for “Apply for me”.</div>
+        </div>
+      </section>

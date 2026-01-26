@@ -1,0 +1,77 @@
+<section class="page" id="tracking" aria-label="Tracking Audit page">
+        <div class="card">
+          <div class="row" style="align-items:flex-start; justify-content:space-between;">
+            <div>
+              <div class="h2">Tracking Audit</div>
+              <div class="muted">Validate conversions before making budget decisions.</div>
+            </div>
+            <div class="row">
+              <button class="btn" onclick="alert('Wireframe: This would re-run audits against Ads + (optional) GA4.')">Re-run Audit</button>
+              <a class="btn primary" href="#action" onclick="go('action')">Add Fixes to Action Plan</a>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="grid3">
+            <div class="card">
+              <div class="h2">Tracking Health</div>
+              <div class="kpi"><strong class="sev-med">Needs Attention</strong><span class="muted">Confidence: 0.74</span></div>
+              <div class="muted">One critical issue affects CPL accuracy.</div>
+            </div>
+            <div class="card">
+              <div class="h2">Critical Issues</div>
+              <div class="kpi"><strong class="sev-high">1</strong><span class="muted">Fix now</span></div>
+              <div class="muted">Lead form double-counting.</div>
+            </div>
+            <div class="card">
+              <div class="h2">Warnings</div>
+              <div class="kpi"><strong class="sev-med">2</strong><span class="muted">Review</span></div>
+              <div class="muted">Call + analytics mismatch.</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <table class="table" aria-label="Conversion actions audit">
+            <thead>
+              <tr>
+                <th>Conversion action</th>
+                <th>Source</th>
+                <th>Counting</th>
+                <th>Status</th>
+                <th>Why it matters</th>
+                <th>Recommended fix</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Lead – Contact Form Submit</td>
+                <td>Website tag</td>
+                <td>Every</td>
+                <td class="sev-high">Critical</td>
+                <td>Inflates leads, underestimates CPL</td>
+                <td>Switch to “One”, remove duplicate tag</td>
+              </tr>
+              <tr>
+                <td>Calls from Ads</td>
+                <td>Call reporting</td>
+                <td>One</td>
+                <td class="sev-med">Warning</td>
+                <td>Mobile conversions likely missing</td>
+                <td>Enable call conversion + duration threshold</td>
+              </tr>
+              <tr>
+                <td>GA4 – Lead (import)</td>
+                <td>GA4 import</td>
+                <td>One</td>
+                <td class="sev-low">OK</td>
+                <td>Stable signal for lead quality trends</td>
+                <td>Keep</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="note">When tracking is “Needs Attention”, dashboard waste estimates should show a warning badge.</div>
+        </div>
+      </section>

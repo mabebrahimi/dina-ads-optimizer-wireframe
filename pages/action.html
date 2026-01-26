@@ -1,0 +1,94 @@
+<section class="page" id="action" aria-label="Action Plan page">
+        <div class="card">
+          <div class="row" style="align-items:flex-start; justify-content:space-between;">
+            <div>
+              <div class="h2">Action Plan</div>
+              <div class="muted">Turn insights into tasks. Each task has (1) a step-by-step guide, (2) an option to let us apply it for you.</div>
+            </div>
+            <div class="row">
+              <button class="btn" onclick="alert('Wireframe: Export would generate CSV / Jira / Trello payload.')">Export</button>
+              <button class="btn primary" onclick="alert('Wireframe: Share would create a read-only link for your team/agency.')">Share</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <table class="table" aria-label="Action plan tasks">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Type</th>
+                <th>Priority</th>
+                <th>Expected impact</th>
+                <th>Owner</th>
+                <th>Status</th>
+                <th style="width:220px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Add negatives (18 research terms)</td>
+                <td>Waste</td>
+                <td class="sev-high">High</td>
+                <td>$640 savings / 30d</td>
+                <td>You</td>
+                <td>To do</td>
+                <td>
+                  <a class="btn" href="#task-guide&task=negatives_18" onclick="go('task-guide',{task:'negatives_18'})">How to do it</a>
+                  <a class="btn primary" href="#task-apply&task=negatives_18" onclick="go('task-apply',{task:'negatives_18'})">Apply for me</a>
+                </td>
+              </tr>
+              <tr>
+                <td>Limit broad expansion on 2 campaigns</td>
+                <td>Waste</td>
+                <td class="sev-med">Medium</td>
+                <td>$410 savings / 30d</td>
+                <td>Agency</td>
+                <td>To do</td>
+                <td>
+                  <a class="btn" href="#task-guide&task=limit_broad_2" onclick="go('task-guide',{task:'limit_broad_2'})">How to do it</a>
+                  <a class="btn primary" href="#task-apply&task=limit_broad_2" onclick="go('task-apply',{task:'limit_broad_2'})">Apply for me</a>
+                </td>
+              </tr>
+              <tr>
+                <td>Fix lead form conversion double-counting</td>
+                <td>Tracking</td>
+                <td class="sev-high">High</td>
+                <td>Restore CPL accuracy</td>
+                <td>Developer</td>
+                <td>In progress</td>
+                <td>
+                  <a class="btn" href="#task-guide&task=fix_double_count" onclick="go('task-guide',{task:'fix_double_count'})">How to do it</a>
+                  <a class="btn primary" href="#task-apply&task=fix_double_count" onclick="go('task-apply',{task:'fix_double_count'})">Apply for me</a>
+                </td>
+              </tr>
+              <tr>
+                <td>Increase rank for “same-day booking” cluster</td>
+                <td>Opportunity</td>
+                <td class="sev-med">Medium</td>
+                <td>+22 leads / 30d</td>
+                <td>Agency</td>
+                <td>Planned</td>
+                <td>
+                  <a class="btn" href="#task-guide&task=rank_cluster" onclick="go('task-guide',{task:'rank_cluster'})">How to do it</a>
+                  <a class="btn primary" href="#task-apply&task=rank_cluster" onclick="go('task-apply',{task:'rank_cluster'})">Apply for me</a>
+                </td>
+              </tr>
+              <tr>
+                <td>Reallocate weekday budgets from low performers</td>
+                <td>Opportunity</td>
+                <td class="sev-low">Low</td>
+                <td>+12 leads / 30d</td>
+                <td>You</td>
+                <td>Planned</td>
+                <td>
+                  <a class="btn" href="#task-guide&task=reallocate_budget" onclick="go('task-guide',{task:'reallocate_budget'})">How to do it</a>
+                  <a class="btn primary" href="#task-apply&task=reallocate_budget" onclick="go('task-apply',{task:'reallocate_budget'})">Apply for me</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="note">Design rule: every task must be actionable now (guide) or delegatable now (apply for me). No dead ends.</div>
+        </div>
+      </section>

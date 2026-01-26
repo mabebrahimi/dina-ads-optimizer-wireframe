@@ -1,0 +1,98 @@
+<section class="page active" id="dashboard" aria-label="Dashboard page">
+
+        <!-- EXECUTIVE SUMMARY -->
+        <div class="grid4">
+          <div class="card">
+            <div class="h2">Spend</div>
+            <div class="kpi"><strong>$14,260</strong><span class="muted">+6% vs prev</span></div>
+            <div class="muted">Budget pacing is stable.</div>
+          </div>
+          <div class="card">
+            <div class="h2">Leads</div>
+            <div class="kpi"><strong>286</strong><span class="muted">-4% vs prev</span></div>
+            <div class="muted">Volume slightly down.</div>
+          </div>
+          <div class="card">
+            <div class="h2">Cost per Lead</div>
+            <div class="kpi"><strong>$49.9</strong><span class="muted">+11% vs prev</span></div>
+            <div class="muted">Efficiency is weakening.</div>
+          </div>
+          <div class="card">
+            <div class="h2">Estimated Waste</div>
+            <div class="kpi"><strong>$2,310</strong><span class="muted">Confidence: 0.82</span></div>
+            <div class="muted">Main drivers: low-intent queries, broad expansion.</div>
+            <div class="divider"></div>
+            <a class="btn link" href="#waste" onclick="go('waste')">Open Waste Explorer →</a>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <!-- WHAT TO DO NEXT (Decision routing, not detailed insights) -->
+        <div class="grid3">
+          <div class="card">
+            <div class="h2">1) Stop Waste</div>
+            <div class="muted">Fast savings from obvious low-quality spend.</div>
+            <div class="divider"></div>
+            <div class="muted"><strong>3 issues detected</strong></div>
+            <ul class="muted">
+              <li>18 low-intent search terms consuming $640</li>
+              <li>2 campaigns over-expanding broad match ($410)</li>
+              <li>1 location with spend, near-zero leads ($290)</li>
+            </ul>
+            <div class="divider"></div>
+            <a class="btn primary" href="#waste" onclick="go('waste')">Review Waste</a>
+            <span class="muted" style="margin-left:8px;">(routes to Explorer)</span>
+          </div>
+
+          <div class="card">
+            <div class="h2">2) Fix Tracking</div>
+            <div class="muted">If measurement is wrong, every decision is risky.</div>
+            <div class="divider"></div>
+            <div class="muted"><strong>1 critical, 2 warnings</strong></div>
+            <ul class="muted">
+              <li>Lead form conversion likely double-counting</li>
+              <li>Call conversion missing on mobile</li>
+              <li>Clicks vs sessions mismatch (62%)</li>
+            </ul>
+            <div class="divider"></div>
+            <a class="btn" href="#tracking" onclick="go('tracking')">Run Tracking Audit</a>
+          </div>
+
+          <div class="card">
+            <div class="h2">3) Scale Winners</div>
+            <div class="muted">Grow where intent and ROI are already strong.</div>
+            <div class="divider"></div>
+            <div class="muted"><strong>2 opportunities found</strong></div>
+            <ul class="muted">
+              <li>High-CVR query cluster limited by rank</li>
+              <li>Top campaign is budget-limited on weekdays</li>
+            </ul>
+            <div class="divider"></div>
+            <a class="btn" href="#opportunities" onclick="go('opportunities')">View Opportunities</a>
+          </div>
+        </div>
+
+        <div style="height:12px;"></div>
+
+        <!-- Alerts preview (links to Change Log) -->
+        <div class="card">
+          <div class="h2">Alerts & Changes</div>
+          <div class="muted">Recent changes that may explain performance shifts.</div>
+          <div class="divider"></div>
+          <div class="list">
+            <div class="item">
+              <strong>Bid strategy changed to Maximize Conversions</strong>
+              <div class="muted">Jan 18, 2026 · CPL increased after change</div>
+            </div>
+            <div class="item">
+              <strong>New ad group: “Same-day booking”</strong>
+              <div class="muted">Jan 16, 2026 · Low data, monitor quality</div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <a class="btn" href="#changes" onclick="go('changes')">View Change Log</a>
+        </div>
+
+        <div class="note">Note: Dashboard is prescriptive (what to do next). Details live in dedicated pages.</div>
+      </section>

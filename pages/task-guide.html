@@ -1,0 +1,64 @@
+<section class="page" id="task-guide" aria-label="Task guide page">
+        <div class="card">
+          <div class="row" style="align-items:flex-start; justify-content:space-between;">
+            <div>
+              <div class="h2">How to do it</div>
+              <div class="muted">Step-by-step guide for the selected task, with the exact items you need.</div>
+            </div>
+            <div class="row">
+              <a class="btn" href="#action" onclick="go('action')">Back to Action Plan</a>
+              <a class="btn primary" href="#task-apply" onclick="go('task-apply')">Prefer us to apply it?</a>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="item">
+            <strong id="guideTitle">Task</strong>
+            <div class="muted" id="guideSummary">Guide summary will appear here.</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="h2">Steps in Google Ads</div>
+          <ol class="muted" id="guideSteps" style="line-height:1.8;">
+            <li>Open Google Ads → Tools & Settings → Shared library → Negative keyword lists.</li>
+            <li>Create a list named “Research Terms (Auto)” or open existing one.</li>
+            <li>Add the terms below as Phrase match negatives.</li>
+            <li>Apply the list to Campaign: “Core Services” (and optionally to “Botox”).</li>
+            <li>Wait 3–7 days, then review Spend and Leads for those terms.</li>
+          </ol>
+
+          <div class="divider"></div>
+
+          <div class="h2">Exact items (copy/paste)</div>
+          <table class="table" aria-label="Exact items for task">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Match</th>
+                <th>Scope</th>
+              </tr>
+            </thead>
+            <tbody id="guideItems">
+              <tr>
+                <td>what is dermal filler</td>
+                <td>Phrase</td>
+                <td>Campaign: Core Services · Ad group: Filler – Generic</td>
+              </tr>
+              <tr>
+                <td>filler side effects</td>
+                <td>Phrase</td>
+                <td>Campaign: Core Services · Ad group: Filler – Generic</td>
+              </tr>
+              <tr>
+                <td>before and after filler</td>
+                <td>Exact</td>
+                <td>Campaign: Core Services · Ad group: Filler – Generic</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="note">In your real product, this page is generated from the Waste Detail evidence + your recommended change.</div>
+        </div>
+      </section>

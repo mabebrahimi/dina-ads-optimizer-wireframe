@@ -1,0 +1,64 @@
+<section class="page" id="task-apply" aria-label="Apply for me page">
+        <div class="card">
+          <div class="row" style="align-items:flex-start; justify-content:space-between;">
+            <div>
+              <div class="h2">Apply for me</div>
+              <div class="muted">You approve the change. We apply it through the connected Google Ads account and log it.</div>
+            </div>
+            <div class="row">
+              <a class="btn" href="#action" onclick="go('action')">Back to Action Plan</a>
+              <a class="btn" href="#task-guide" onclick="go('task-guide')">Show the guide instead</a>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="item">
+            <strong id="applyTitle">Task</strong>
+            <div class="muted" id="applySummary">Approval summary will appear here.</div>
+            <div class="meta">
+              <span class="tag">Creates an audit log entry</span>
+              <span class="tag">Reversible change (rollback supported)</span>
+              <span class="tag">Estimated impact shown in Action Plan</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="h2">What we will change</div>
+          <table class="table" aria-label="Changes preview">
+            <thead>
+              <tr>
+                <th>Change</th>
+                <th>Scope</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="applyChanges">
+              <tr>
+                <td>Add negative keywords</td>
+                <td>Campaign: Core Services</td>
+                <td>18 terms (phrase/exact) to block research traffic</td>
+              </tr>
+              <tr>
+                <td>Attach negative list</td>
+                <td>Campaign: Botox</td>
+                <td>Optional, only if overlap is detected</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="divider"></div>
+
+          <div class="h2">Approval</div>
+          <div class="row" style="align-items:center; flex-wrap:wrap;">
+            <label class="pill"><input type="checkbox" /> I confirm I want you to apply these changes to my Google Ads account.</label>
+            <label class="pill"><input type="checkbox" /> I understand results are not guaranteed, and changes can be rolled back.</label>
+          </div>
+
+          <div class="divider"></div>
+
+          <button class="btn primary" onclick="alert('Wireframe: This would queue a job: apply changes via Google Ads API, then write an audit log + mark task as Done.')">Approve & Apply</button>
+          <div class="note">Real product: this triggers an apply workflow, permissions checks, and a full audit trail.</div>
+        </div>
+      </section>
