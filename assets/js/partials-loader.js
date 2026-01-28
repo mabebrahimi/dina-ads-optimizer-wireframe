@@ -1,14 +1,12 @@
 const pageOrder = [
   'dashboard',
   'insights',
-  'waste',
+  'campaign-detail',
   'waste-detail',
-  'tracking',
-  'opportunities',
   'action',
   'task-guide',
   'task-apply',
-  'changes'
+  'how-dina-works'
 ];
 
 async function loadPages(){

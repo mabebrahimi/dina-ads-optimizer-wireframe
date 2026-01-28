@@ -1,0 +1,63 @@
+<section class="page" id="campaign-detail" aria-label="Campaign detail page">
+  <div class="card">
+    <div class="row" style="align-items:center; justify-content:space-between;">
+      <div>
+        <div class="h2" id="campaignDetailTitle">Campaign</div>
+        <div class="muted" id="campaignDetailStatus">Status</div>
+      </div>
+      <div class="row" style="gap:8px;">
+        <button class="btn" onclick="go('insights')">Back to Insights</button>
+        <button class="btn primary" onclick="go('action')">Create Task</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <div class="h2">Summary</div>
+      <div class="muted" id="campaignDetailSummary">Summary goes here.</div>
+    </div>
+
+    <div class="detail-grid" style="margin-bottom:12px;">
+      <div class="detail-card">
+        <div class="label">Spend (30d)</div>
+        <div class="value" id="campaignKpiSpend">—</div>
+      </div>
+      <div class="detail-card">
+        <div class="label">Leads (30d)</div>
+        <div class="value" id="campaignKpiLeads">—</div>
+      </div>
+      <div class="detail-card">
+        <div class="label">CPL (30d)</div>
+        <div class="value" id="campaignKpiCpl">—</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <div class="row" style="align-items:center; justify-content:space-between;">
+        <div class="h2" id="campaignChartLabel">Trend</div>
+        <div class="muted">Last 7 days</div>
+      </div>
+      <div class="line-chart" id="campaignLineChart">
+        <svg class="line-chart-svg" viewBox="0 0 420 140" aria-label="Campaign trend chart" role="img">
+          <polyline id="campaignLinePath" fill="none" stroke="#60a5fa" stroke-width="3" points=""></polyline>
+          <g id="campaignLineDots"></g>
+        </svg>
+        <div class="line-chart-axis">
+          <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="align-items:center; justify-content:space-between;">
+        <div class="h2">Insights</div>
+        <div class="muted">Grouped for this campaign</div>
+      </div>
+      <div class="divider"></div>
+      <div class="list" id="campaignInsightsList"></div>
+    </div>
+  </div>
+
+  <div class="note">Tip: Fix tracking issues before scaling budget.</div>
+</section>

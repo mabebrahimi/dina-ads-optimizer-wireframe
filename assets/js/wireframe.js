@@ -1,17 +1,15 @@
 const titles = {
   dashboard: ['Dashboard', 'A quick command center for decisions.'],
   insights: ['Insights', 'Diagnostic feed with evidence and filters.'],
-  waste: ['Waste Explorer', 'Pinpoint wasted spend and export fixes.'],
+  'campaign-detail': ['Campaign Detail', 'Status, summary, and recent trend.'],
   'waste-detail': ['Waste Detail', 'Evidence + exact items + recommended changes.'],
-  tracking: ['Tracking Audit', 'Validate conversion measurement and data quality.'],
-  opportunities: ['Opportunities', 'Scale winners based on proven signals.'],
   action: ['Action Plan', 'Turn insights into tasks and track progress.'],
   'task-guide': ['How to do it', 'Step-by-step instructions with copy/paste items.'],
   'task-apply': ['Apply for me', 'Approve changes to be applied and logged.'],
-  changes: ['Change Log', 'Account changes correlated with performance.']
+  'how-dina-works': ['How Dina Works', 'Learn how the system analyzes your account and identifies opportunities.']
 };
 
-// Parse hashes like: #waste&tab=terms  OR  #task-guide&task=negatives_18
+// Parse hashes like: #task-guide&task=negatives_18
 function parseHash(){
   const raw = (window.location.hash || '#dashboard').replace('#','');
   const parts = raw.split('&');
@@ -40,23 +38,6 @@ function go(pageId, paramsObj){
   hydrate();
 }
 
-// ----- Waste tabs -----
-function setWasteTab(tab){
-  const label = {
-    terms: 'Search Terms',
-    keywords: 'Keywords',
-    locations: 'Locations',
-    devices: 'Devices',
-    schedule: 'Schedule'
-  }[tab] || 'Search Terms';
-
-  const labelEl = document.getElementById('wasteTabLabel');
-  if(labelEl) labelEl.textContent = label;
-
-  document.querySelectorAll('#waste .waste-tab').forEach(el => {
-    el.style.display = (el.getAttribute('data-tab') === tab) ? 'block' : 'none';
-  });
-}
 
 // ----- Waste detail hydration (fake but meaningful) -----
 const wasteDetailData = {
@@ -286,6 +267,253 @@ function hydrateWasteDetail(itemKey){
   }
 }
 
+// ----- Insights by Campaign -----
+const insightsByCampaign = {
+  'Core Services': [
+    {
+      title: 'High waste from low-intent search terms',
+      description: 'Users are researching, not booking. These terms have high clicks and near-zero leads.',
+      type: 'Waste',
+      severity: 'High',
+      impact: '$640 / 30d',
+      confidence: '0.86',
+      evidence: '18 terms',
+      actionLink: '#insights',
+      actionText: 'View Details',
+      actionFn: () => go('insights')
+    },
+    {
+      title: 'Broad expansion generating unrelated impressions',
+      description: 'Two campaigns match loosely related queries, driving spend without conversions.',
+      type: 'Waste',
+      severity: 'Medium',
+      impact: '$410 / 30d',
+      confidence: '0.73',
+      evidence: '2 campaigns',
+      actionLink: '#insights',
+      actionText: 'View Details',
+      actionFn: () => go('insights')
+    }
+  ],
+  'Botox': [
+    {
+      title: 'Under-spending on high-intent query cluster',
+      description: 'High CVR but low impression share. Likely rank/budget limited.',
+      type: 'Opportunity',
+      severity: 'Medium',
+      impact: '+22 leads / 30d',
+      confidence: '0.69',
+      evidence: 'IS lost (rank) 31%',
+      actionLink: '#insights',
+      actionText: 'View Details',
+      actionFn: () => go('insights')
+    }
+  ],
+  'Account-wide': [
+    {
+      title: 'Tracking anomaly: lead form likely double-counting',
+      description: 'Conversion fires multiple times per session, inflating performance metrics.',
+      type: 'Tracking',
+      severity: 'High',
+      impact: 'data reliability risk',
+      confidence: '0.78',
+      evidence: 'conv/session 1.9',
+      actionLink: '#insights',
+      actionText: 'View Details',
+      actionFn: () => go('insights')
+    }
+  ]
+};
+
+const campaignOverview = {
+  'Core Services': {
+    status: 'Needs attention',
+    summary: 'High waste from low-intent search terms and broad expansion.',
+    spend: '$12.4k',
+    leads: '42',
+    cpl: '$295',
+    trendLabel: 'Leads (last 7 days)',
+    trend: [3, 5, 4, 2, 6, 7, 4]
+  },
+  'Botox': {
+    status: 'Growth opportunity',
+    summary: 'High-intent cluster is underfunded. Increase rank to capture demand.',
+    spend: '$6.1k',
+    leads: '31',
+    cpl: '$197',
+    trendLabel: 'Leads (last 7 days)',
+    trend: [2, 4, 3, 4, 5, 6, 7]
+  },
+  'Account-wide': {
+    status: 'Tracking risk',
+    summary: 'Lead form likely double-counting. Fix to restore reliable KPIs.',
+    spend: '$21.8k',
+    leads: '—',
+    cpl: '—',
+    trendLabel: 'Conversions (last 7 days)',
+    trend: [9, 12, 11, 10, 15, 14, 13]
+  }
+};
+
+function renderInsightsByCampaign(){
+  const container = document.getElementById('campaignsList');
+  if(!container) return;
+
+  container.innerHTML = '';
+
+  Object.keys(insightsByCampaign).forEach(campaignName => {
+    const insights = insightsByCampaign[campaignName];
+    const insightCount = insights.length;
+    const highCount = insights.filter(i => i.severity === 'High').length;
+    const medCount = insights.filter(i => i.severity === 'Medium').length;
+    const lowCount = insights.filter(i => i.severity === 'Low').length;
+    const overview = campaignOverview[campaignName] || {};
+
+    const campaignEl = document.createElement('div');
+    campaignEl.className = 'campaign-item';
+    campaignEl.innerHTML = `
+      <div class="campaign-header">
+        <div>
+          <div class="campaign-title">${campaignName}</div>
+          <div class="campaign-meta">
+            <span>${insightCount} insight${insightCount !== 1 ? 's' : ''}</span>
+            <span class="tag">High: ${highCount}</span>
+            <span class="tag">Medium: ${medCount}</span>
+            <span class="tag">Low: ${lowCount}</span>
+          </div>
+        </div>
+        <div class="campaign-toggle">▼</div>
+      </div>
+      <div class="campaign-summary">
+        <div class="muted" style="margin-bottom:8px;">${overview.status || 'Status'}</div>
+        <div style="font-weight:600; margin-bottom:10px;">${overview.summary || 'Summary not available.'}</div>
+        <div class="meta" style="margin-bottom:12px;">
+          <span class="tag">Spend: ${overview.spend || '—'}</span>
+          <span class="tag">Leads: ${overview.leads || '—'}</span>
+          <span class="tag">CPL: ${overview.cpl || '—'}</span>
+        </div>
+        <div class="row" style="gap:8px;">
+          <button class="btn primary campaign-cta" data-campaign="${campaignName}">View campaign detail</button>
+        </div>
+      </div>
+    `;
+
+    const headerEl = campaignEl.querySelector('.campaign-header');
+    headerEl.addEventListener('click', () => toggleCampaign(headerEl));
+    const toggleEl = headerEl.querySelector('.campaign-toggle');
+    toggleEl.classList.add('expanded');
+
+    container.appendChild(campaignEl);
+  });
+
+  container.querySelectorAll('.campaign-cta').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const campaign = e.currentTarget.getAttribute('data-campaign');
+      go('campaign-detail', { campaign });
+    });
+  });
+}
+
+function toggleCampaign(headerEl){
+  const campaignItem = headerEl.closest('.campaign-item');
+  const toggleEl = headerEl.querySelector('.campaign-toggle');
+  const summaryEl = campaignItem.querySelector('.campaign-summary');
+  if(!summaryEl) return;
+
+  const isExpanded = summaryEl.classList.contains('expanded');
+
+  if(isExpanded){
+    summaryEl.classList.remove('expanded');
+    headerEl.classList.remove('active');
+    toggleEl.classList.remove('expanded');
+  } else {
+    summaryEl.classList.add('expanded');
+    headerEl.classList.add('active');
+    toggleEl.classList.add('expanded');
+  }
+}
+
+window.toggleCampaign = toggleCampaign;
+
+function hydrateCampaignDetail(campaignKey){
+  const data = campaignOverview[campaignKey] || campaignOverview['Core Services'];
+  const titleEl = document.getElementById('campaignDetailTitle');
+  const statusEl = document.getElementById('campaignDetailStatus');
+  const summaryEl = document.getElementById('campaignDetailSummary');
+  const kpiSpend = document.getElementById('campaignKpiSpend');
+  const kpiLeads = document.getElementById('campaignKpiLeads');
+  const kpiCpl = document.getElementById('campaignKpiCpl');
+  const chartLabel = document.getElementById('campaignChartLabel');
+  const chartPath = document.getElementById('campaignLinePath');
+  const chartDots = document.getElementById('campaignLineDots');
+  const insightsList = document.getElementById('campaignInsightsList');
+
+  if(titleEl) titleEl.textContent = campaignKey;
+  if(statusEl) statusEl.textContent = data.status || 'Status';
+  if(summaryEl) summaryEl.textContent = data.summary || '';
+  if(kpiSpend) kpiSpend.textContent = data.spend || '—';
+  if(kpiLeads) kpiLeads.textContent = data.leads || '—';
+  if(kpiCpl) kpiCpl.textContent = data.cpl || '—';
+  if(chartLabel) chartLabel.textContent = data.trendLabel || 'Trend';
+
+  if(chartPath && chartDots){
+    const values = data.trend || [];
+    const max = Math.max(...(values.length ? values : [1]));
+    const min = Math.min(...(values.length ? values : [0]));
+    const height = 120;
+    const width = 400;
+    const step = values.length > 1 ? width / (values.length - 1) : width;
+    const points = values.map((val, idx) => {
+      const x = idx * step;
+      const scaled = max === min ? 0.5 : (val - min) / (max - min);
+      const y = height - scaled * height;
+      return { x, y, val };
+    });
+
+    chartPath.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
+    chartDots.innerHTML = '';
+    points.forEach(p => {
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', p.x);
+      dot.setAttribute('cy', p.y);
+      dot.setAttribute('r', 4);
+      dot.setAttribute('class', 'line-dot');
+      dot.setAttribute('aria-label', `Value ${p.val}`);
+      chartDots.appendChild(dot);
+    });
+  }
+
+  if(insightsList){
+    const insights = insightsByCampaign[campaignKey] || [];
+    insightsList.innerHTML = '';
+    insights.forEach(insight => {
+      const item = document.createElement('div');
+      item.className = 'item';
+      const severityClass = insight.severity === 'High' ? 'sev-high' : insight.severity === 'Medium' ? 'sev-med' : 'sev-low';
+      item.innerHTML = `
+        <div class="item-top">
+          <div>
+            <strong>${insight.title}</strong>
+            <div class="muted">${insight.description}</div>
+            <div class="meta">
+              <span class="tag">Type: ${insight.type}</span>
+              <span class="tag">Severity: <span class="${severityClass}">${insight.severity}</span></span>
+              <span class="tag">${insight.type === 'Opportunity' ? 'Est. uplift' : 'Est. impact'}: ${insight.impact}</span>
+              <span class="tag">Confidence: ${insight.confidence}</span>
+              <span class="tag">Evidence: ${insight.evidence}</span>
+            </div>
+          </div>
+          <div class="row" style="gap:8px;">
+            <button class="btn" onclick="go('insights')">${insight.actionText}</button>
+            <button class="btn primary" onclick="go('action')">Add as Task</button>
+          </div>
+        </div>
+      `;
+      insightsList.appendChild(item);
+    });
+  }
+}
+
 // ----- Task guide/apply hydration (fake but meaningful) -----
 const taskData = {
   negatives_18: {
@@ -296,7 +524,7 @@ const taskData = {
       'Create or open a list named “Research Terms (Auto)”.',
       'Add the items below (match type included).',
       'Apply the list to Campaign: “Core Services” (and optionally “Botox” if overlap is detected).',
-      'Monitor results for 3–7 days, then review the “Waste Explorer” again.'
+      'Monitor results for 3–7 days, then review the “insights” again.'
     ],
     items: [
       ['what is dermal filler','Phrase','Campaign: Core Services · Ad group: Filler – Generic'],
@@ -315,7 +543,7 @@ const taskData = {
       'Open Campaigns → select the two flagged campaigns.',
       'Review Keywords → identify broad match keywords driving low-quality terms.',
       'Add phrase/exact versions for high-intent terms; pause the broad ones temporarily.',
-      'Add a negative keyword list for “research” themes discovered in Waste Explorer.',
+      'Add a negative keyword list for “research” themes discovered in insights.',
       'Re-check Search terms after 72 hours.'
     ],
     items: [
@@ -369,7 +597,7 @@ const taskData = {
     title: 'Reallocate weekday budgets from low performers',
     summary: 'Shift budget from low-quality segments to the best performers during weekdays for more leads at similar CPL.',
     steps: [
-      'Identify low-performing segments in Waste Explorer (location/device/schedule).',
+      'Identify low-performing segments in insights (location/device/schedule).',
       'Reduce spend where leads are near-zero (e.g., late-night hours, low-performing locations).',
       'Move saved budget to the top campaign/ad group segments during Mon–Thu.',
       'Track the change in leads and CPL for 7 days.',
@@ -433,10 +661,9 @@ function hydrate(){
   const { page, params } = parseHash();
   setActive(page);
 
-  // Waste tab
-  if(page === 'waste'){
-    const tab = params.get('tab') || 'terms';
-    setWasteTab(tab);
+  // Insights page
+  if(page === 'insights'){
+    renderInsightsByCampaign();
   }
 
   // Waste detail
@@ -449,6 +676,12 @@ function hydrate(){
   if(page === 'task-guide' || page === 'task-apply'){
     const task = params.get('task') || 'negatives_18';
     hydrateTask(task);
+  }
+
+  // Campaign detail
+  if(page === 'campaign-detail'){
+    const campaign = params.get('campaign') || 'Core Services';
+    hydrateCampaignDetail(campaign);
   }
 }
 

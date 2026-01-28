@@ -57,3 +57,165 @@ a{ color:inherit; text-decoration:none; }
 .table tr:last-child td{ border-bottom:none; }
 
 .note{ margin-top:12px; color:var(--muted); font-size:12px; }
+
+.campaigns-list{ display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }
+.campaign-item{ border:1px solid var(--line); border-radius:14px; background:var(--card); overflow:hidden; }
+.campaign-header{ padding:14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.2s; }
+.campaign-header:hover{ background:rgba(255,255,255,0.04); }
+.campaign-header.active{ background:rgba(96,165,250,0.1); }
+.campaign-title{ font-weight:700; font-size:14px; }
+.campaign-meta{ display:flex; gap:8px; align-items:center; color:var(--muted); font-size:12px; }
+.campaign-toggle{ color:var(--accent); font-size:18px; transition:transform 0.2s; }
+.campaign-toggle.expanded{ transform:rotate(180deg); }
+.campaign-summary{ padding:0 14px 14px; display:none; }
+.campaign-summary.expanded{ display:block; }
+
+.detail-grid{ display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:12px; }
+.detail-card{ border:1px solid var(--line); border-radius:12px; padding:12px; background:rgba(255,255,255,0.02); }
+.detail-card .label{ color:var(--muted); font-size:12px; margin-bottom:6px; }
+.detail-card .value{ font-size:16px; font-weight:700; }
+.line-chart{ padding:12px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,0.02); }
+.line-chart-svg{ width:100%; height:140px; display:block; }
+.line-chart-axis{ display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:6px; }
+.line-dot{ fill:#60a5fa; }
+.line-dot-label{ font-size:10px; fill:#e5e7eb; }
+
+/* How Dina Works Page Styles */
+.how-dina-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap:16px;
+}
+
+.how-dina-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  transition:all 0.2s ease;
+  overflow:hidden;
+}
+
+.how-dina-card:hover{
+  border-color:rgba(96,165,250,0.4);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+
+.how-dina-card-image{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  background:rgba(255,255,255,0.02);
+  border-radius:12px;
+  border:1px solid var(--line);
+}
+
+.how-dina-image-placeholder{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.how-dina-card-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.how-dina-card-title{
+  font-size:16px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:4px;
+}
+
+.how-dina-updates{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.how-dina-update-item{
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(255,255,255,0.02);
+  transition:all 0.2s ease;
+}
+
+.how-dina-update-item:hover{
+  border-color:rgba(96,165,250,0.3);
+  background:rgba(255,255,255,0.04);
+}
+
+.how-dina-update-date{
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+.how-dina-update-title{
+  font-size:14px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:6px;
+}
+
+.how-dina-guides{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap:12px;
+}
+
+.how-dina-guide-card{
+  display:flex;
+  gap:12px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(255,255,255,0.02);
+  transition:all 0.2s ease;
+  cursor:pointer;
+}
+
+.how-dina-guide-card:hover{
+  border-color:rgba(96,165,250,0.3);
+  background:rgba(255,255,255,0.04);
+  transform:translateX(4px);
+}
+
+.how-dina-guide-icon{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.how-dina-guide-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.how-dina-guide-title{
+  font-size:13px;
+  font-weight:700;
+  color:var(--text);
+}
+
+@media (max-width: 1100px){
+  .campaigns-list{ grid-template-columns: 1fr; }
+  .detail-grid{ grid-template-columns: 1fr; }
+  .how-dina-grid{ grid-template-columns: 1fr; }
+  .how-dina-guides{ grid-template-columns: 1fr; }
+}

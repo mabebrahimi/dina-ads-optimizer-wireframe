@@ -6,20 +6,20 @@
               <div class="muted">Diagnostic feed with evidence. Filter, inspect, then add tasks.</div>
             </div>
             <div class="row" style="justify-content:flex-end;">
-              <select class="input" aria-label="Type">
+              <select class="input" aria-label="Type" id="insightsTypeFilter">
                 <option selected>All types</option>
                 <option>Waste</option>
                 <option>Tracking</option>
                 <option>Opportunity</option>
                 <option>Alerts</option>
               </select>
-              <select class="input" aria-label="Severity">
+              <select class="input" aria-label="Severity" id="insightsSeverityFilter">
                 <option selected>All severity</option>
                 <option>High</option>
                 <option>Medium</option>
                 <option>Low</option>
               </select>
-              <select class="input" aria-label="Sort">
+              <select class="input" aria-label="Sort" id="insightsSortFilter">
                 <option selected>Sort: Impact</option>
                 <option>Sort: Confidence</option>
                 <option>Sort: Newest</option>
@@ -29,86 +29,8 @@
 
           <div class="divider"></div>
 
-          <div class="list">
-            <div class="item">
-              <div class="item-top">
-                <div>
-                  <strong>High waste from low-intent search terms</strong>
-                  <div class="muted">Users are researching, not booking. These terms have high clicks and near-zero leads.</div>
-                  <div class="meta">
-                    <span class="tag">Type: Waste</span>
-                    <span class="tag">Severity: <span class="sev-high">High</span></span>
-                    <span class="tag">Est. impact: $640 / 30d</span>
-                    <span class="tag">Confidence: 0.86</span>
-                    <span class="tag">Evidence: 18 terms</span>
-                  </div>
-                </div>
-                <div class="row" style="gap:8px;">
-                  <a class="btn" href="#waste" onclick="go('waste')">View in Explorer</a>
-                  <a class="btn primary" href="#action" onclick="go('action')">Add as Task</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="item">
-              <div class="item-top">
-                <div>
-                  <strong>Broad expansion generating unrelated impressions</strong>
-                  <div class="muted">Two campaigns match loosely related queries, driving spend without conversions.</div>
-                  <div class="meta">
-                    <span class="tag">Type: Waste</span>
-                    <span class="tag">Severity: <span class="sev-med">Medium</span></span>
-                    <span class="tag">Est. impact: $410 / 30d</span>
-                    <span class="tag">Confidence: 0.73</span>
-                    <span class="tag">Evidence: 2 campaigns</span>
-                  </div>
-                </div>
-                <div class="row" style="gap:8px;">
-                  <a class="btn" href="#waste" onclick="go('waste')">Open Explorer</a>
-                  <a class="btn primary" href="#action" onclick="go('action')">Add as Task</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="item">
-              <div class="item-top">
-                <div>
-                  <strong>Tracking anomaly: lead form likely double-counting</strong>
-                  <div class="muted">Conversion fires multiple times per session, inflating performance metrics.</div>
-                  <div class="meta">
-                    <span class="tag">Type: Tracking</span>
-                    <span class="tag">Severity: <span class="sev-high">High</span></span>
-                    <span class="tag">Impact: data reliability risk</span>
-                    <span class="tag">Confidence: 0.78</span>
-                    <span class="tag">Evidence: conv/session 1.9</span>
-                  </div>
-                </div>
-                <div class="row" style="gap:8px;">
-                  <a class="btn" href="#tracking" onclick="go('tracking')">Run Audit</a>
-                  <a class="btn primary" href="#action" onclick="go('action')">Add as Task</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="item">
-              <div class="item-top">
-                <div>
-                  <strong>Under-spending on high-intent query cluster</strong>
-                  <div class="muted">High CVR but low impression share. Likely rank/budget limited.</div>
-                  <div class="meta">
-                    <span class="tag">Type: Opportunity</span>
-                    <span class="tag">Severity: <span class="sev-med">Medium</span></span>
-                    <span class="tag">Est. uplift: +22 leads / 30d</span>
-                    <span class="tag">Confidence: 0.69</span>
-                    <span class="tag">Evidence: IS lost (rank) 31%</span>
-                  </div>
-                </div>
-                <div class="row" style="gap:8px;">
-                  <a class="btn" href="#opportunities" onclick="go('opportunities')">View Opportunity</a>
-                  <a class="btn primary" href="#action" onclick="go('action')">Add as Task</a>
-                </div>
-              </div>
-            </div>
+          <div class="campaigns-list" id="campaignsList">
+            <!-- Campaigns will be dynamically loaded here -->
           </div>
         </div>
 
