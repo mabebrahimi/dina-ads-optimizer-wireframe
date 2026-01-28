@@ -3,7 +3,7 @@
           <div class="row" style="align-items:center; justify-content:space-between;">
             <div>
               <div class="h2">Insights</div>
-              <div class="muted">Diagnostic feed with evidence. Filter, inspect, then add tasks.</div>
+              <div class="muted">Campaign overview for fast triage. Open a campaign to see full insight details.</div>
             </div>
             <div class="row" style="justify-content:flex-end;">
               <select class="input" aria-label="Type" id="insightsTypeFilter">
@@ -28,6 +28,16 @@
           </div>
 
           <div class="divider"></div>
+
+          <div class="row" style="align-items:center; justify-content:space-between;">
+            <div class="muted" id="insightsSummaryLine">Showing campaigns.</div>
+            <div class="meta" id="insightsQuickLegend">
+              <span class="tag">Campaign cards</span>
+              <span class="tag">KPIs: Spend · Leads · CPL (30d)</span>
+              <span class="tag">Potential improvement</span>
+            </div>
+          </div>
+          <div class="divider" style="margin-top:10px;"></div>
 
           <div class="campaigns-list" id="campaignsList">
             <!-- Campaigns will be dynamically loaded here -->

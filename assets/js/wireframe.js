@@ -275,56 +275,100 @@ function hydrateWasteDetail(itemKey){
 const insightsByCampaign = {
   'Core Services': [
     {
+      id: 'cs_research_terms',
       title: 'High waste from low-intent search terms',
-      description: 'Users are researching, not booking. These terms have high clicks and near-zero leads.',
+      description: 'Users are researching, not booking. This cluster has high clicks and near-zero leads.',
       type: 'Waste',
       severity: 'High',
       impact: '$640 / 30d',
+      impactScore: 640,
       confidence: '0.86',
-      evidence: '18 terms',
-      actionLink: '#insights',
-      actionText: 'View Details',
-      actionFn: () => go('insights')
+      evidence: '18 search terms',
+      source: { campaign: 'Core Services', adGroup: 'Filler – Generic' },
+      why: 'Intent mismatch (research terms like “what is / side effects / before & after”) drives clicks without bookings.',
+      recommended: 'Add a “Research intent” negative list (phrase/exact) + keep budget for “cost/near me/booking” terms.',
+      metrics: [
+        { label: 'Spend', value: '$640' },
+        { label: 'Clicks', value: '165' },
+        { label: 'Leads', value: '0' },
+        { label: 'Waste rate', value: '≈100%' }
+      ],
+      evidenceLink: { page: 'waste-detail', params: { item: 'term_what_is_filler', tab: 'terms' } },
+      guideTask: 'negatives_18',
+      createdAt: 1738100000
     },
     {
+      id: 'cs_broad_expansion',
       title: 'Broad expansion generating unrelated impressions',
       description: 'Two campaigns match loosely related queries, driving spend without conversions.',
       type: 'Waste',
       severity: 'Medium',
       impact: '$410 / 30d',
+      impactScore: 410,
       confidence: '0.73',
-      evidence: '2 campaigns',
-      actionLink: '#insights',
-      actionText: 'View Details',
-      actionFn: () => go('insights')
+      evidence: 'Broad match leakage',
+      source: { campaign: 'Core Services', adGroup: 'Filler – Generic' },
+      why: 'Broad keywords pull in low-relevance queries unless controlled by strong negatives and structure.',
+      recommended: 'Tighten match types (phrase/exact) + pause the broad keyword temporarily + add negatives for known leak themes.',
+      metrics: [
+        { label: 'Spend', value: '$410' },
+        { label: 'Impr.', value: '9.8k' },
+        { label: 'Leads', value: '2' },
+        { label: 'CPA', value: '$205' }
+      ],
+      evidenceLink: { page: 'waste-detail', params: { item: 'kw_filler_broad', tab: 'keywords' } },
+      guideTask: 'limit_broad_2',
+      createdAt: 1738000000
     }
   ],
   'Botox': [
     {
+      id: 'bx_under_spend_cluster',
       title: 'Under-spending on high-intent query cluster',
       description: 'High CVR but low impression share. Likely rank/budget limited.',
       type: 'Opportunity',
       severity: 'Medium',
       impact: '+22 leads / 30d',
+      impactScore: 520,
       confidence: '0.69',
       evidence: 'IS lost (rank) 31%',
-      actionLink: '#insights',
-      actionText: 'View Details',
-      actionFn: () => go('insights')
+      source: { campaign: 'Botox', adGroup: 'Botox – Generic' },
+      why: 'You’re losing auctions on high-intent terms; demand exists but you’re not capturing all qualified clicks.',
+      recommended: 'Improve ad relevance + increase rank modestly (bids / tCPA) to recover impression share.',
+      metrics: [
+        { label: 'IS lost (rank)', value: '31%' },
+        { label: 'Leads', value: '31' },
+        { label: 'CPL', value: '$197' },
+        { label: 'Uplift', value: '+22 leads' }
+      ],
+      evidenceLink: { page: 'campaign-detail', params: { campaign: 'Botox' } },
+      guideTask: 'rank_cluster',
+      createdAt: 1738200000
     }
   ],
   'Account-wide': [
     {
+      id: 'acct_double_count',
       title: 'Tracking anomaly: lead form likely double-counting',
       description: 'Conversion fires multiple times per session, inflating performance metrics.',
       type: 'Tracking',
       severity: 'High',
       impact: 'data reliability risk',
+      impactScore: 900,
       confidence: '0.78',
       evidence: 'conv/session 1.9',
-      actionLink: '#insights',
-      actionText: 'View Details',
-      actionFn: () => go('insights')
+      source: { campaign: 'Account-wide', adGroup: '—' },
+      why: 'Double-counting makes CPL look better than reality and can cause bidding to optimize toward the wrong signal.',
+      recommended: 'Set the primary lead conversion to “One” and remove duplicate tags/imports.',
+      metrics: [
+        { label: 'Conv/session', value: '1.9' },
+        { label: 'Risk', value: 'High' },
+        { label: 'Primary impact', value: 'Reporting + bidding' },
+        { label: 'Scope', value: 'Account' }
+      ],
+      evidenceLink: { page: 'task-guide', params: { task: 'fix_double_count' } },
+      guideTask: 'fix_double_count',
+      createdAt: 1738300000
     }
   ]
 };
@@ -365,57 +409,596 @@ function renderInsightsByCampaign(){
 
   container.innerHTML = '';
 
-  Object.keys(insightsByCampaign).forEach(campaignName => {
-    const insights = insightsByCampaign[campaignName];
-    const insightCount = insights.length;
-    const highCount = insights.filter(i => i.severity === 'High').length;
-    const medCount = insights.filter(i => i.severity === 'Medium').length;
-    const lowCount = insights.filter(i => i.severity === 'Low').length;
-    const overview = campaignOverview[campaignName] || {};
+  const typeSel = document.getElementById('insightsTypeFilter');
+  const sevSel = document.getElementById('insightsSeverityFilter');
+  const sortSel = document.getElementById('insightsSortFilter');
+  const summaryLine = document.getElementById('insightsSummaryLine');
 
-    const campaignEl = document.createElement('div');
-    campaignEl.className = 'campaign-item';
-    campaignEl.innerHTML = `
-      <div class="campaign-header">
-        <div>
-          <div class="campaign-title">${campaignName}</div>
-          <div class="campaign-meta">
-            <span>${insightCount} insight${insightCount !== 1 ? 's' : ''}</span>
-            <span class="tag">High: ${highCount}</span>
-            <span class="tag">Medium: ${medCount}</span>
-            <span class="tag">Low: ${lowCount}</span>
+  const selectedType = typeSel ? typeSel.value : 'All types';
+  const selectedSeverity = sevSel ? sevSel.value : 'All severity';
+  const selectedSort = sortSel ? sortSel.value : 'Sort: Impact';
+
+  const normalizeConfidence = (c) => {
+    const n = typeof c === 'number' ? c : parseFloat(String(c || '').trim());
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const applyFilters = (insights) => {
+    return (insights || []).filter(i => {
+      const okType = (selectedType === 'All types') || i.type === selectedType;
+      const okSev = (selectedSeverity === 'All severity') || i.severity === selectedSeverity;
+      return okType && okSev;
+    });
+  };
+
+  const applySort = (insights) => {
+    const list = [...(insights || [])];
+    if(selectedSort === 'Sort: Confidence'){
+      list.sort((a,b) => normalizeConfidence(b.confidence) - normalizeConfidence(a.confidence));
+      return list;
+    }
+    if(selectedSort === 'Sort: Newest'){
+      list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+      return list;
+    }
+    // Sort: Impact (default)
+    list.sort((a,b) => (b.impactScore || 0) - (a.impactScore || 0));
+    return list;
+  };
+
+  const parseUpliftLeads = (impactStr) => {
+    const s = String(impactStr || '');
+    const m = s.match(/([+]\s*\d+)\s*leads/i);
+    if(!m) return 0;
+    const n = parseInt(m[1].replace(/\D/g,''), 10);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const formatUsdCompact = (n) => {
+    const val = Math.round(n || 0);
+    if(val >= 1000) return `$${(val/1000).toFixed(2).replace(/\.00$/,'')}k`;
+    return `$${val}`;
+  };
+
+  const computePotentialImprovement = (insights) => {
+    const wasteUsd = (insights || []).filter(i => i.type === 'Waste').reduce((sum, i) => sum + (i.impactScore || 0), 0);
+    const oppLeads = (insights || []).filter(i => i.type === 'Opportunity').reduce((sum, i) => sum + parseUpliftLeads(i.impact), 0);
+    const hasTracking = (insights || []).some(i => i.type === 'Tracking');
+
+    const parts = [];
+    if(wasteUsd > 0) parts.push(`Save ${formatUsdCompact(wasteUsd)} / 30d`);
+    if(oppLeads > 0) parts.push(`Gain +${oppLeads} leads / 30d`);
+    if(!parts.length && hasTracking) parts.push('Reduce tracking risk');
+    return parts.length ? parts.join(' · ') : '—';
+  };
+
+  const computeCampaignSortScore = (insights) => {
+    const impacts = (insights || []).map(i => i.impactScore || 0);
+    const confs = (insights || []).map(i => normalizeConfidence(i.confidence));
+    const newest = (insights || []).map(i => i.createdAt || 0);
+    return {
+      maxImpact: impacts.length ? Math.max(...impacts) : 0,
+      maxConfidence: confs.length ? Math.max(...confs) : 0,
+      maxNewest: newest.length ? Math.max(...newest) : 0
+    };
+  };
+
+  const computePriority = (insights) => {
+    const list = insights || [];
+    const hasHigh = list.some(i => i.severity === 'High');
+    const hasMed = list.some(i => i.severity === 'Medium');
+    const hasAny = list.length > 0;
+    if(hasHigh) return { label: 'Check now', cls: 'prio-urgent', icon: '!' };
+    if(hasMed) return { label: 'Review soon', cls: 'prio-soon', icon: '•' };
+    if(hasAny) return { label: 'Can wait', cls: 'prio-later', icon: '✓' };
+    return { label: 'No issues', cls: 'prio-none', icon: '—' };
+  };
+
+  // Campaign cards should be driven by campaigns, not individual insight rows.
+  const campaignNames = Array.from(new Set([
+    ...Object.keys(campaignOverview || {}),
+    ...Object.keys(insightsByCampaign || {})
+  ]));
+
+  const campaigns = campaignNames.map(name => {
+    const raw = insightsByCampaign[name] || [];
+    const filtered = applyFilters(raw);
+    const score = computeCampaignSortScore(filtered);
+    const counts = {
+      total: filtered.length,
+      high: filtered.filter(i => i.severity === 'High').length,
+      medium: filtered.filter(i => i.severity === 'Medium').length,
+      low: filtered.filter(i => i.severity === 'Low').length
+    };
+    return { name, raw, filtered, score, counts };
+  }).filter(c => {
+    // If user applies a filter, hide campaigns with zero matching insights.
+    const filteringActive = (selectedType !== 'All types') || (selectedSeverity !== 'All severity');
+    if(filteringActive) return c.counts.total > 0;
+    // Default view: show all campaigns in overview (even if empty).
+    return true;
+  });
+
+  if(selectedSort === 'Sort: Confidence'){
+    campaigns.sort((a,b) => b.score.maxConfidence - a.score.maxConfidence);
+  } else if(selectedSort === 'Sort: Newest'){
+    campaigns.sort((a,b) => b.score.maxNewest - a.score.maxNewest);
+  } else {
+    campaigns.sort((a,b) => b.score.maxImpact - a.score.maxImpact);
+  }
+
+  if(summaryLine){
+    const suffixParts = [];
+    if(selectedType !== 'All types') suffixParts.push(`Type: ${selectedType}`);
+    if(selectedSeverity !== 'All severity') suffixParts.push(`Severity: ${selectedSeverity}`);
+    if(selectedSort) suffixParts.push(selectedSort);
+    summaryLine.textContent = `Showing ${campaigns.length} campaign${campaigns.length !== 1 ? 's' : ''}. ${suffixParts.length ? '(' + suffixParts.join(' · ') + ')' : ''}`;
+  }
+
+  campaigns.forEach(c => {
+    const overview = campaignOverview[c.name] || {};
+    const potential = computePotentialImprovement(c.filtered);
+    const counts = c.counts;
+    const priority = computePriority(c.filtered);
+
+    const card = document.createElement('div');
+    card.className = 'campaign-card';
+    card.innerHTML = `
+      <div class="campaign-card-top">
+        <div style="min-width:0;">
+          <div class="campaign-title-row">
+            <span class="priority-badge ${priority.cls}" title="${priority.label}" aria-label="Priority: ${priority.label}">${priority.icon}</span>
+            <div class="campaign-card-title">${c.name}</div>
+            <span class="tag">Priority: ${priority.label}</span>
+          </div>
+          <div class="campaign-card-status">
+            <span class="tag">${overview.status || 'Status: —'}</span>
+            <span class="tag">${counts.total} insight${counts.total !== 1 ? 's' : ''}</span>
+            <span class="tag">High: ${counts.high}</span>
+            <span class="tag">Medium: ${counts.medium}</span>
+            <span class="tag">Low: ${counts.low}</span>
           </div>
         </div>
-        <div class="campaign-toggle">▼</div>
-      </div>
-      <div class="campaign-summary">
-        <div class="muted" style="margin-bottom:8px;">${overview.status || 'Status'}</div>
-        <div style="font-weight:600; margin-bottom:10px;">${overview.summary || 'Summary not available.'}</div>
-        <div class="meta" style="margin-bottom:12px;">
-          <span class="tag">Spend: ${overview.spend || '—'}</span>
-          <span class="tag">Leads: ${overview.leads || '—'}</span>
-          <span class="tag">CPL: ${overview.cpl || '—'}</span>
+        <div class="campaign-card-actions">
+          <button class="btn primary" type="button" data-insight-action="open-campaign" data-campaign="${c.name}">Open campaign</button>
         </div>
-        <div class="row" style="gap:8px;">
-          <button class="btn primary campaign-cta" data-campaign="${campaignName}">View campaign detail</button>
+      </div>
+
+      <div class="campaign-card-summary">${overview.summary || 'Summary not available.'}</div>
+
+      <div class="campaign-kpi-grid">
+        <div class="campaign-kpi">
+          <div class="label">Spend (30d)</div>
+          <div class="value">${overview.spend || '—'}</div>
+        </div>
+        <div class="campaign-kpi">
+          <div class="label">Leads (30d)</div>
+          <div class="value">${overview.leads || '—'}</div>
+        </div>
+        <div class="campaign-kpi">
+          <div class="label">CPL (30d)</div>
+          <div class="value">${overview.cpl || '—'}</div>
+        </div>
+        <div class="campaign-kpi">
+          <div class="label">Potential improvement</div>
+          <div class="value">${potential}</div>
         </div>
       </div>
     `;
 
-    const headerEl = campaignEl.querySelector('.campaign-header');
-    headerEl.addEventListener('click', () => toggleCampaign(headerEl));
-    const toggleEl = headerEl.querySelector('.campaign-toggle');
-    toggleEl.classList.add('expanded');
-
-    container.appendChild(campaignEl);
+    container.appendChild(card);
   });
+}
 
-  container.querySelectorAll('.campaign-cta').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const campaign = e.currentTarget.getAttribute('data-campaign');
-      go('campaign-detail', { campaign });
+function renderInsightCardHTML(insight){
+  const severityClass = insight.severity === 'High' ? 'sev-high' : insight.severity === 'Medium' ? 'sev-med' : 'sev-low';
+  const typeClass = insight.type === 'Waste' ? 'waste' : insight.type === 'Opportunity' ? 'opportunity' : 'tracking';
+  const pillClass = insight.type === 'Waste' ? 'pill-waste' : insight.type === 'Opportunity' ? 'pill-opp' : 'pill-track';
+  const sourceLine = insight?.source?.adGroup && insight.source.adGroup !== '—'
+    ? `${insight.source.campaign} · ${insight.source.adGroup}`
+    : `${insight?.source?.campaign || '—'}`;
+  const primaryImpactLabel = insight.type === 'Opportunity' ? 'Est. uplift' : insight.type === 'Tracking' ? 'Risk' : 'Est. waste';
+
+  const kpis = (insight.metrics || []).slice(0, 4).map(k => `
+    <div class="detail-card">
+      <div class="label">${k.label}</div>
+      <div class="value">${k.value}</div>
+    </div>
+  `).join('');
+
+  const ev = insight.evidenceLink || {};
+  const evPage = ev.page || 'waste-detail';
+  const evParams = ev.params || {};
+
+  return `
+    <details class="insight-card" open>
+      <summary>
+        <div class="insight-summary-left">
+          <div class="insight-sub">
+            <span class="type-badge ${typeClass}">${insight.type}</span>
+            <span class="tag">Severity: <span class="${severityClass}">${insight.severity}</span></span>
+            <span class="tag">Confidence: ${insight.confidence}</span>
+          </div>
+          <div class="insight-title">${insight.title}</div>
+          <div class="muted" style="margin-top:6px;">Source: <strong>${sourceLine}</strong></div>
+        </div>
+        <div class="insight-pills">
+          <span class="pill-strong ${pillClass}">${primaryImpactLabel}: <strong class="impact-big">${insight.impact}</strong></span>
+          <span class="insight-chevron">▼</span>
+        </div>
+      </summary>
+      <div class="insight-body">
+        <div class="insight-body-grid">
+          <div>
+            <div class="muted"><strong>Why:</strong> ${insight.why || insight.description || '—'}</div>
+            <div class="muted" style="margin-top:8px;"><strong>Recommended:</strong> ${insight.recommended || '—'}</div>
+            <div class="insight-evidence">
+              <span class="tag">Evidence: ${insight.evidence || '—'}</span>
+              <span class="tag">Outcome-first: decide → verify → act</span>
+            </div>
+          </div>
+          <div class="insight-kpis">
+            ${kpis}
+          </div>
+        </div>
+        <div class="insight-actions">
+          <button class="btn" type="button"
+            data-insight-action="evidence"
+            data-page="${evPage}"
+            data-item="${String(evParams.item || '')}"
+            data-tab="${String(evParams.tab || '')}"
+            data-campaign="${String(evParams.campaign || insight?.source?.campaign || '')}"
+            data-task="${String(insight.guideTask || '')}"
+          >View evidence</button>
+          <button class="btn" type="button" data-insight-action="guide" data-task="${String(insight.guideTask || '')}">How to fix</button>
+          <button class="btn primary" type="button" data-insight-action="add-task">Add to Action Plan</button>
+        </div>
+      </div>
+    </details>
+  `;
+}
+
+function renderInsightCompactHTML(insight){
+  const severityClass = insight.severity === 'High' ? 'sev-high' : insight.severity === 'Medium' ? 'sev-med' : 'sev-low';
+  const typeClass = insight.type === 'Waste' ? 'waste' : insight.type === 'Opportunity' ? 'opportunity' : 'tracking';
+  const sourceLine = insight?.source?.adGroup && insight.source.adGroup !== '—'
+    ? `${insight.source.campaign} · ${insight.source.adGroup}`
+    : `${insight?.source?.campaign || '—'}`;
+  const primaryImpactLabel = insight.type === 'Opportunity' ? 'Uplift' : insight.type === 'Tracking' ? 'Risk' : 'Waste';
+  const campaignForOpen = insight?.source?.campaign || 'Core Services';
+
+  const ev = insight.evidenceLink || {};
+  const evPage = ev.page || 'waste-detail';
+  const evParams = ev.params || {};
+
+  return `
+    <div class="insight-compact">
+      <div class="insight-compact-top">
+        <div style="min-width:0;">
+          <div class="insight-compact-sub">
+            <span class="type-badge ${typeClass}">${insight.type}</span>
+            <span class="tag">Severity: <span class="${severityClass}">${insight.severity}</span></span>
+            <span class="tag">Confidence: ${insight.confidence}</span>
+            <span class="tag">Source: <strong>${sourceLine}</strong></span>
+          </div>
+          <div class="insight-compact-title">${insight.title}</div>
+          <div class="muted" style="margin-top:6px;">Evidence: ${insight.evidence || '—'}</div>
+        </div>
+        <div class="insight-compact-actions">
+          <span class="insight-compact-impact">${primaryImpactLabel}: <strong>${insight.impact}</strong></span>
+          <button class="btn" type="button" data-insight-action="open-campaign" data-campaign="${campaignForOpen}">Open campaign</button>
+          <button class="btn" type="button"
+            data-insight-action="evidence"
+            data-page="${evPage}"
+            data-item="${String(evParams.item || '')}"
+            data-tab="${String(evParams.tab || '')}"
+            data-campaign="${String(evParams.campaign || insight?.source?.campaign || '')}"
+            data-task="${String(insight.guideTask || '')}"
+          >Evidence</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ----- Dashboard (decision brief) -----
+function getAllInsightsFlat(){
+  const list = [];
+  Object.keys(insightsByCampaign || {}).forEach((campaign) => {
+    (insightsByCampaign[campaign] || []).forEach((ins) => {
+      list.push({ ...ins, _campaignKey: campaign });
     });
   });
+  return list;
+}
+
+function formatUsdCompact(n){
+  const val = Math.round(Number(n || 0));
+  if(val >= 1000) return `$${(val/1000).toFixed(2).replace(/\.00$/,'')}k`;
+  return `$${val}`;
+}
+
+function normalizeConfidence(c){
+  const n = typeof c === 'number' ? c : parseFloat(String(c || '').trim());
+  return Number.isFinite(n) ? n : 0;
+}
+
+function parseUpliftLeadsFromImpact(impactStr){
+  const s = String(impactStr || '');
+  const m = s.match(/([+]\s*\d+)\s*leads/i);
+  if(!m) return 0;
+  const n = parseInt(m[1].replace(/\D/g,''), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function buildAtStakeLine(insight){
+  if(!insight) return '—';
+  if(insight.type === 'Waste'){
+    const usd = insight.impactScore || 0;
+    return `${formatUsdCompact(usd)} / 30d`;
+  }
+  if(insight.type === 'Opportunity'){
+    const leads = parseUpliftLeadsFromImpact(insight.impact);
+    if(leads > 0) return `+${leads} leads / 30d`;
+    return insight.impact || '—';
+  }
+  return insight.impact || 'data reliability risk';
+}
+
+function renderDashboardBrowseCardHTML(insight){
+  const severityClass = insight.severity === 'High' ? 'sev-high' : insight.severity === 'Medium' ? 'sev-med' : 'sev-low';
+  const typeClass = insight.type === 'Waste' ? 'waste' : insight.type === 'Opportunity' ? 'opportunity' : 'tracking';
+  const sourceLine = insight?.source?.adGroup && insight.source.adGroup !== '—'
+    ? `${insight.source.campaign} · ${insight.source.adGroup}`
+    : `${insight?.source?.campaign || '—'}`;
+  const primaryImpactLabel = insight.type === 'Opportunity' ? 'Uplift' : insight.type === 'Tracking' ? 'Risk' : 'Waste';
+  const campaignForOpen = insight?.source?.campaign || 'Core Services';
+
+  const ev = insight.evidenceLink || {};
+  const evPage = ev.page || 'waste-detail';
+  const evParams = ev.params || {};
+
+  const atStakeLabel = insight.type === 'Waste'
+    ? 'Money at stake'
+    : insight.type === 'Opportunity'
+      ? 'Potential uplift'
+      : 'At stake';
+
+  return `
+    <div class="insight-compact">
+      <div class="insight-compact-top">
+        <div style="min-width:0;">
+          <div class="insight-compact-sub">
+            <span class="type-badge ${typeClass}">${insight.type}</span>
+            <span class="tag">Severity: <span class="${severityClass}">${insight.severity}</span></span>
+            <span class="tag">Confidence: ${insight.confidence}</span>
+            <span class="tag">Source: <strong>${sourceLine}</strong></span>
+          </div>
+          <div class="insight-compact-title">${insight.title}</div>
+          <div class="muted" style="margin-top:6px;"><strong>${atStakeLabel}:</strong> ${buildAtStakeLine(insight)}</div>
+          <div class="muted" style="margin-top:6px;">Evidence: ${insight.evidence || '—'}</div>
+        </div>
+        <div class="insight-compact-actions">
+          <span class="insight-compact-impact">${primaryImpactLabel}: <strong>${insight.impact}</strong></span>
+          <button class="btn" type="button" data-insight-action="open-campaign" data-campaign="${campaignForOpen}">Open campaign</button>
+          <button class="btn" type="button"
+            data-insight-action="evidence"
+            data-page="${evPage}"
+            data-item="${String(evParams.item || '')}"
+            data-tab="${String(evParams.tab || '')}"
+            data-campaign="${String(evParams.campaign || insight?.source?.campaign || '')}"
+            data-task="${String(insight.guideTask || '')}"
+          >Evidence</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function parseDashLimit(label){
+  const s = String(label || '');
+  if(s.includes('Show all')) return Infinity;
+  const m = s.match(/top\s+(\d+)/i);
+  if(!m) return 6;
+  const n = parseInt(m[1], 10);
+  return Number.isFinite(n) ? n : 6;
+}
+
+function renderDashboard(){
+  const wasteKpiEl = document.getElementById('dashKpiWaste');
+  const wasteConfEl = document.getElementById('dashKpiWasteConf');
+  const wasteWhyEl = document.getElementById('dashKpiWasteWhy');
+  const trackingHealthEl = document.getElementById('dashTrackingHealth');
+  const countsLineEl = document.getElementById('dashCountsLine');
+  const totalsWasteEl = document.getElementById('dashTotalsWaste');
+  const totalsOppEl = document.getElementById('dashTotalsOpp');
+  const totalsTrackEl = document.getElementById('dashTotalsTrack');
+
+  const priorityWasteEl = document.getElementById('dashPriorityWaste');
+  const priorityTrackEl = document.getElementById('dashPriorityTracking');
+  const priorityOppEl = document.getElementById('dashPriorityOpportunity');
+
+  const typeSel = document.getElementById('dashTypeFilter');
+  const limitSel = document.getElementById('dashLimitFilter');
+  const feedSummary = document.getElementById('dashFeedSummary');
+  const feedEl = document.getElementById('dashTopDecisions');
+  const focusEl = document.getElementById('dashFocusCampaigns');
+
+  // Dashboard partial might not be loaded yet (or user isn't on dashboard).
+  if(!wasteKpiEl && !feedEl && !focusEl) return;
+
+  const all = getAllInsightsFlat();
+
+  const renderPriorityCard = (insight, label) => {
+    if(!insight){
+      return `
+        <div class="dash-priority-card">
+          <div class="muted"><strong>${label}</strong></div>
+          <div class="dash-priority-title">No items yet</div>
+          <div class="muted dash-priority-why">Once Dina finds issues/opportunities, the top move will appear here.</div>
+          <div class="dash-priority-actions">
+            <button class="btn" type="button" onclick="go('insights')">Open Insights</button>
+          </div>
+        </div>
+      `;
+    }
+
+    const severityClass = insight.severity === 'High' ? 'sev-high' : insight.severity === 'Medium' ? 'sev-med' : 'sev-low';
+    const typeClass = insight.type === 'Waste' ? 'waste' : insight.type === 'Opportunity' ? 'opportunity' : 'tracking';
+    const primaryImpactLabel = insight.type === 'Opportunity' ? 'Est. uplift' : insight.type === 'Tracking' ? 'Risk' : 'Est. waste';
+    const sourceLine = insight?.source?.adGroup && insight.source.adGroup !== '—'
+      ? `${insight.source.campaign} · ${insight.source.adGroup}`
+      : `${insight?.source?.campaign || '—'}`;
+
+    const ev = insight.evidenceLink || {};
+    const evPage = ev.page || 'waste-detail';
+    const evParams = ev.params || {};
+    const campaignForOpen = insight?.source?.campaign || 'Core Services';
+
+    return `
+      <div class="dash-priority-card">
+        <div class="dash-priority-top">
+          <div class="insight-compact-sub" style="margin-top:0;">
+            <span class="type-badge ${typeClass}">${insight.type}</span>
+            <span class="tag">Severity: <span class="${severityClass}">${insight.severity}</span></span>
+            <span class="tag">Confidence: ${insight.confidence}</span>
+          </div>
+          <span class="dash-priority-impact">${primaryImpactLabel}: <strong>${insight.impact}</strong></span>
+        </div>
+
+        <div class="dash-priority-title">${insight.title}</div>
+        <div class="muted" style="margin-top:6px;">Source: <strong>${sourceLine}</strong></div>
+        <div class="muted dash-priority-why"><strong>Why:</strong> ${insight.why || insight.description || '—'}</div>
+
+        <div class="dash-priority-actions">
+          <button class="btn" type="button" data-insight-action="open-campaign" data-campaign="${campaignForOpen}">Open campaign</button>
+          <button class="btn" type="button"
+            data-insight-action="evidence"
+            data-page="${evPage}"
+            data-item="${String(evParams.item || '')}"
+            data-tab="${String(evParams.tab || '')}"
+            data-campaign="${String(evParams.campaign || insight?.source?.campaign || '')}"
+            data-task="${String(insight.guideTask || '')}"
+          >Evidence</button>
+          <button class="btn" type="button" data-insight-action="guide" data-task="${String(insight.guideTask || '')}">How to fix</button>
+          <button class="btn primary" type="button" data-insight-action="add-task">Add task</button>
+        </div>
+      </div>
+    `;
+  };
+
+  // KPI: estimated waste (derived from Waste insights impactScore)
+  const wasteInsights = all.filter(i => i.type === 'Waste');
+  const wasteUsd = wasteInsights.reduce((sum, i) => sum + (i.impactScore || 0), 0);
+  const avgConf = wasteInsights.length
+    ? wasteInsights.reduce((sum, i) => sum + normalizeConfidence(i.confidence), 0) / wasteInsights.length
+    : 0;
+  const drivers = wasteInsights
+    .slice()
+    .sort((a,b) => (b.impactScore || 0) - (a.impactScore || 0))
+    .slice(0, 2)
+    .map(i => i.title);
+
+  if(wasteKpiEl) wasteKpiEl.textContent = formatUsdCompact(wasteUsd);
+  if(wasteConfEl) wasteConfEl.textContent = `Confidence: ${avgConf ? avgConf.toFixed(2) : '—'}`;
+  if(wasteWhyEl) wasteWhyEl.textContent = drivers.length ? `Main drivers: ${drivers.join(' · ')}` : 'Main drivers will appear here.';
+
+  // Tracking health (simple heuristic based on tracking insights)
+  const trackingInsights = all.filter(i => i.type === 'Tracking');
+  const hasHighTracking = trackingInsights.some(i => i.severity === 'High');
+  const hasAnyTracking = trackingInsights.length > 0;
+  if(trackingHealthEl){
+    if(hasHighTracking) trackingHealthEl.innerHTML = `<span class="sev-high">High risk</span> <span class="muted">(${trackingInsights.length} findings)</span>`;
+    else if(hasAnyTracking) trackingHealthEl.innerHTML = `<span class="sev-med">Warnings</span> <span class="muted">(${trackingInsights.length} findings)</span>`;
+    else trackingHealthEl.innerHTML = `<span class="sev-low">Healthy</span> <span class="muted">(no issues detected)</span>`;
+  }
+
+  // Feed filters
+  const selectedType = typeSel ? typeSel.value : 'All types';
+  const limit = parseDashLimit(limitSel ? limitSel.value : 'Show top 6');
+
+  const filtered = all.filter(i => selectedType === 'All types' || i.type === selectedType);
+  filtered.sort((a,b) => (b.impactScore || 0) - (a.impactScore || 0));
+
+  const shown = filtered.slice(0, limit);
+  if(feedSummary){
+    feedSummary.textContent = `Showing ${shown.length}${limit === Infinity ? '' : ` of ${filtered.length}`} decision${shown.length !== 1 ? 's' : ''}${selectedType !== 'All types' ? ` (Type: ${selectedType})` : ''}.`;
+  }
+  if(feedEl){
+    feedEl.innerHTML = shown.length
+      ? shown.map(ins => renderDashboardBrowseCardHTML(ins)).join('')
+      : `<div class="note">No items match your filters.</div>`;
+  }
+
+  // Totals line (browse section)
+  const oppInsights = all.filter(i => i.type === 'Opportunity');
+  const sumImpact = (list) => (list || []).reduce((sum, i) => sum + (i.impactScore || 0), 0);
+  const parseUpliftLeads = (impactStr) => {
+    const s = String(impactStr || '');
+    const m = s.match(/([+]\s*\d+)\s*leads/i);
+    if(!m) return 0;
+    const n = parseInt(m[1].replace(/\D/g,''), 10);
+    return Number.isFinite(n) ? n : 0;
+  };
+  const oppLeads = oppInsights.reduce((sum, i) => sum + parseUpliftLeads(i.impact), 0);
+  const trackRisk = hasHighTracking ? 'High risk' : hasAnyTracking ? 'Warnings' : 'Healthy';
+
+  if(totalsWasteEl) totalsWasteEl.textContent = `Waste: ${formatUsdCompact(sumImpact(wasteInsights))} / 30d`;
+  if(totalsOppEl) totalsOppEl.textContent = `Opportunity: +${oppLeads} leads / 30d`;
+  if(totalsTrackEl) totalsTrackEl.textContent = `Tracking: ${trackRisk}`;
+
+  // Counts line (priorities section)
+  if(countsLineEl){
+    countsLineEl.textContent = `${wasteInsights.length} waste · ${trackingInsights.length} tracking · ${oppInsights.length} opportunity`;
+  }
+
+  // 3 priorities (top impact per type)
+  const topWaste = wasteInsights.slice().sort((a,b) => (b.impactScore || 0) - (a.impactScore || 0))[0];
+  const topTrack = trackingInsights.slice().sort((a,b) => (b.impactScore || 0) - (a.impactScore || 0))[0];
+  const topOpp = oppInsights.slice().sort((a,b) => (b.impactScore || 0) - (a.impactScore || 0))[0];
+
+  if(priorityWasteEl) priorityWasteEl.innerHTML = renderPriorityCard(topWaste, 'Priority: Waste');
+  if(priorityTrackEl) priorityTrackEl.innerHTML = renderPriorityCard(topTrack, 'Priority: Tracking');
+  if(priorityOppEl) priorityOppEl.innerHTML = renderPriorityCard(topOpp, 'Priority: Opportunity');
+
+  // Focus campaigns: rank by total impactScore across insights
+  if(focusEl){
+    const byCampaign = {};
+    all.forEach(i => {
+      const c = i?.source?.campaign || i._campaignKey || '—';
+      if(!byCampaign[c]) byCampaign[c] = { campaign: c, totalImpact: 0, count: 0, high: 0 };
+      byCampaign[c].totalImpact += (i.impactScore || 0);
+      byCampaign[c].count += 1;
+      if(i.severity === 'High') byCampaign[c].high += 1;
+    });
+    const ranked = Object.values(byCampaign).sort((a,b) => b.totalImpact - a.totalImpact).slice(0, 4);
+
+    focusEl.innerHTML = ranked.map(r => {
+      const overview = campaignOverview[r.campaign] || {};
+      const status = overview.status || 'Status: —';
+      const summary = overview.summary || 'Open to review details.';
+      return `
+        <div class="item">
+          <div class="item-top">
+            <div style="min-width:0;">
+              <strong>${r.campaign}</strong>
+              <div class="muted">${status}</div>
+              <div class="muted" style="margin-top:6px;">${summary}</div>
+              <div class="meta">
+                <span class="tag">${r.count} insight${r.count !== 1 ? 's' : ''}</span>
+                <span class="tag">High: ${r.high}</span>
+                <span class="tag">Impact: ${formatUsdCompact(r.totalImpact)}*</span>
+              </div>
+            </div>
+            <button class="btn primary" type="button" data-insight-action="open-campaign" data-campaign="${r.campaign}">Open</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    if(!ranked.length){
+      focusEl.innerHTML = `<div class="note">No campaigns available.</div>`;
+    }
+  }
 }
 
 function toggleCampaign(headerEl){
@@ -489,32 +1072,7 @@ function hydrateCampaignDetail(campaignKey){
 
   if(insightsList){
     const insights = insightsByCampaign[campaignKey] || [];
-    insightsList.innerHTML = '';
-    insights.forEach(insight => {
-      const item = document.createElement('div');
-      item.className = 'item';
-      const severityClass = insight.severity === 'High' ? 'sev-high' : insight.severity === 'Medium' ? 'sev-med' : 'sev-low';
-      item.innerHTML = `
-        <div class="item-top">
-          <div>
-            <strong>${insight.title}</strong>
-            <div class="muted">${insight.description}</div>
-            <div class="meta">
-              <span class="tag">Type: ${insight.type}</span>
-              <span class="tag">Severity: <span class="${severityClass}">${insight.severity}</span></span>
-              <span class="tag">${insight.type === 'Opportunity' ? 'Est. uplift' : 'Est. impact'}: ${insight.impact}</span>
-              <span class="tag">Confidence: ${insight.confidence}</span>
-              <span class="tag">Evidence: ${insight.evidence}</span>
-            </div>
-          </div>
-          <div class="row" style="gap:8px;">
-            <button class="btn" onclick="go('insights')">${insight.actionText}</button>
-            <button class="btn primary" onclick="go('action')">Add as Task</button>
-          </div>
-        </div>
-      `;
-      insightsList.appendChild(item);
-    });
+    insightsList.innerHTML = insights.map(ins => renderInsightCardHTML(ins)).join('');
   }
 }
 
@@ -960,6 +1518,11 @@ function hydrate(){
   // Campaign Blueprint: project-dependent UI
   hydrateCampaignBlueprint();
 
+  // Dashboard
+  if(page === 'dashboard'){
+    renderDashboard();
+  }
+
   // Insights page
   if(page === 'insights'){
     renderInsightsByCampaign();
@@ -1084,6 +1647,47 @@ function bootstrapWireframe(){
     if(e.target && e.target.id === 'projectSelect'){
       hydrate();
     }
+    if(e.target && (e.target.id === 'insightsTypeFilter' || e.target.id === 'insightsSeverityFilter' || e.target.id === 'insightsSortFilter')){
+      renderInsightsByCampaign();
+    }
+    if(e.target && (e.target.id === 'dashTypeFilter' || e.target.id === 'dashLimitFilter')){
+      renderDashboard();
+    }
+  });
+
+  // Insights expand/collapse controls
+  document.body.addEventListener('click', function(e){
+    if(!(e.target instanceof Element)) return;
+    const actionEl = e.target.closest('[data-insight-action]');
+    if(actionEl){
+      e.preventDefault();
+      e.stopPropagation();
+      const action = actionEl.getAttribute('data-insight-action');
+      if(action === 'open-campaign'){
+        const campaign = actionEl.getAttribute('data-campaign') || 'Core Services';
+        return go('campaign-detail', { campaign });
+      }
+      if(action === 'evidence'){
+        const page = actionEl.getAttribute('data-page');
+        const item = actionEl.getAttribute('data-item');
+        const tab = actionEl.getAttribute('data-tab');
+        const campaign = actionEl.getAttribute('data-campaign');
+        const task = actionEl.getAttribute('data-task');
+        if(page === 'waste-detail') return go('waste-detail', { item: item || 'term_what_is_filler', tab: tab || 'terms' });
+        if(page === 'campaign-detail') return go('campaign-detail', { campaign: campaign || 'Core Services' });
+        if(page === 'task-guide') return go('task-guide', { task: task || 'negatives_18' });
+        return;
+      }
+      if(action === 'guide'){
+        const task = actionEl.getAttribute('data-task');
+        return go('task-guide', { task: task || 'negatives_18' });
+      }
+      if(action === 'add-task'){
+        return go('action');
+      }
+      return;
+    }
+    // (Insights page is campaign-card based; no expand/collapse-all needed)
   });
 }
 
