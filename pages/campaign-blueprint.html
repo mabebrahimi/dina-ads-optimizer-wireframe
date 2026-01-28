@@ -1,0 +1,125 @@
+<section class="page" id="campaign-blueprint" aria-label="Campaign Blueprint page">
+  <div class="card">
+    <div class="blueprint-hero">
+      <div>
+        <div class="h2">Campaign Blueprint</div>
+        <div class="muted">
+          Everything you need <strong>before</strong> creating a Google Ads campaign. Based on your project brief, personas, competitors,
+          and (if you have them) your active campaigns.
+        </div>
+      </div>
+      <div class="row" style="gap:8px; align-items:center;">
+        <button class="btn" onclick="alert('Wireframe: Would refresh personas/competitors + re-generate blueprint.')">Refresh</button>
+        <button class="btn primary" onclick="go('task-guide',{task:'create_campaign_google_ads'})">Create campaign</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="h2">Project context</div>
+        <div class="muted">Source: your project setup</div>
+        <div class="divider"></div>
+        <div class="muted"><strong>Project:</strong> <span id="blueprintProjectName">—</span></div>
+        <div class="muted"><strong>Type:</strong> <span id="blueprintProjectType">—</span></div>
+        <div class="muted"><strong>Target market:</strong> <span id="blueprintProjectTarget">—</span></div>
+        <div class="muted"><strong>Budget:</strong> <span id="blueprintProjectBudget">—</span></div>
+        <div class="muted"><strong>Primary metric:</strong> <span id="blueprintProjectMetric">—</span></div>
+      </div>
+
+      <div class="card">
+        <div class="h2">Personas & intent</div>
+        <div class="muted">Source: AI + you</div>
+        <div class="divider"></div>
+        <div id="blueprintPersonas" class="chip-row" aria-label="Personas chips"></div>
+        <div class="divider"></div>
+        <div class="muted"><strong>Primary intent targets:</strong> <span id="blueprintPrimaryIntents">—</span></div>
+      </div>
+    </div>
+
+    <div style="height:12px;"></div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="h2">Competitor set</div>
+        <div class="muted">Source: competitor discovery</div>
+        <div class="divider"></div>
+        <div id="blueprintCompetitors" class="chip-row" aria-label="Competitor chips"></div>
+        <div class="divider"></div>
+        <div class="muted"><strong>Positioning wedge:</strong> <span id="blueprintPositioningWedge">—</span></div>
+      </div>
+
+      <div class="card" id="blueprintActiveCampaignsCard">
+        <div class="h2">Active campaigns (considered)</div>
+        <div class="muted">Source: connected Google Ads</div>
+        <div class="divider"></div>
+        <div class="list" id="blueprintActiveCampaigns" aria-label="Active campaigns list"></div>
+        <div class="note" style="margin-top:10px;">We avoid overlap by separating intent clusters and keeping negatives tight.</div>
+      </div>
+    </div>
+
+    <div style="height:12px;"></div>
+
+    <div class="card">
+      <div class="h2">Pre-campaign recommendations (do this first)</div>
+      <div class="muted">
+        Outcome-first checklist. Each item explains what to do, why it matters, and how it connects to your personas/competitors (and your existing campaigns if present).
+      </div>
+      <div class="divider"></div>
+
+      <div class="blueprint-accordion-list" id="blueprintRecommendations" aria-label="Recommendation list">
+        <!-- Hydrated by wireframe.js -->
+      </div>
+    </div>
+
+    <div style="height:12px;"></div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between; align-items:flex-start;">
+        <div>
+          <div class="h2">Recommended campaign blueprint</div>
+          <div class="muted">A starter structure you can create in Google Ads in ~20 minutes.</div>
+        </div>
+        <div class="row" style="gap:8px;">
+          <button class="btn" onclick="alert('Wireframe: Would export a Google Ads Editor CSV.')">Export CSV</button>
+          <button class="btn primary" onclick="go('task-guide',{task:'create_campaign_google_ads'})">Create campaign</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+
+      <table class="table" aria-label="Recommended campaign blueprint table">
+        <thead>
+          <tr>
+            <th>Campaign</th>
+            <th>Goal</th>
+            <th>Budget split</th>
+            <th>Ad groups</th>
+            <th>Match mix</th>
+            <th>Guardrails</th>
+          </tr>
+        </thead>
+        <tbody id="blueprintBlueprintTable">
+          <!-- Hydrated by wireframe.js -->
+        </tbody>
+      </table>
+
+      <div class="note">Design rule: explain the “why” before the CTA, then make the CTA inevitable.</div>
+    </div>
+
+    <div style="height:12px;"></div>
+
+    <div class="card blueprint-cta-card" aria-label="Create campaign CTA">
+      <div class="row" style="justify-content:space-between; align-items:center; flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:800;">Ready to build the campaign?</div>
+          <div class="muted">We’ll guide you step-by-step in Google Ads using this blueprint.</div>
+        </div>
+        <div class="row" style="gap:8px;">
+          <button class="btn" onclick="go('competitors')">Review competitors</button>
+          <button class="btn primary" onclick="go('task-guide',{task:'create_campaign_google_ads'})">Create campaign in Google Ads</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

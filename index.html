@@ -17,15 +17,27 @@
       <nav class="nav" aria-label="Primary navigation">
         <a href="#dashboard" data-nav="dashboard" class="active">Dashboard <span class="badge">Today</span></a>
         <a href="#insights" data-nav="insights">Insights <span class="badge">12</span></a>
+        <a href="#competitors" data-nav="competitors">Competitors</a>
+        <a href="#campaign-blueprint" data-nav="campaign-blueprint">Campaign Blueprint</a>
         <a href="#action" data-nav="action">Action Plan <span class="badge">5 tasks</span></a>
+        <a href="#ai-chat" data-nav="ai-chat">AI Chat</a>
         <a href="#how-dina-works" data-nav="how-dina-works">How Dina Works</a>
       </nav>
 
       <div class="divider"></div>
 
       <div class="muted">Project</div>
-      <div style="margin-top:6px;" class="pill">Nimbus Clinics – UAE</div>
+      <div style="margin-top:6px;">
+        <select class="input" id="projectSelect" style="width:100%; font-size:12px; padding:6px 10px;" aria-label="Select project">
+          <option selected>Nimbus Clinics – UAE</option>
+          <option>Nova CRM</option>
+          <option>Atlas Health</option>
+        </select>
+      </div>
       <div style="margin-top:8px;" class="muted">Google Ads: <strong>Connected</strong> · Last sync: <strong>2h ago</strong></div>
+      <div style="margin-top:8px;">
+        <button class="btn" style="width:100%; font-size:12px; padding:6px 10px;" onclick="go('new-project')">+ New Project</button>
+      </div>
     </aside>
 
     <!-- MAIN CONTENT -->

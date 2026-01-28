@@ -1,0 +1,175 @@
+<section class="page" id="ai-chat" aria-label="AI Chat page">
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center;">
+      <div>
+        <div class="h2">AI Chat</div>
+        <div class="muted">Ask questions about your project, campaigns, competitors, and Campaign Blueprint. Project context is automatically included.</div>
+      </div>
+      <div class="row" style="gap:8px;">
+        <button class="btn">Clear conversation</button>
+        <button class="btn">Export conversation</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="chat-layout">
+      <aside class="chat-history-sidebar">
+        <div class="chat-history-title">Chat history</div>
+        <div class="chat-history-list">
+          <button type="button" class="chat-history-item active" data-chat="current" aria-current="true">
+            <span class="chat-history-label">Current conversation</span>
+            <span class="chat-history-meta">Today</span>
+          </button>
+          <button type="button" class="chat-history-item" data-chat="1">
+            <span class="chat-history-label">Competitor positioning & gaps</span>
+            <span class="chat-history-meta">Yesterday</span>
+          </button>
+          <button type="button" class="chat-history-item" data-chat="2">
+            <span class="chat-history-label">Budget allocation by campaign</span>
+            <span class="chat-history-meta">Jan 27</span>
+          </button>
+          <button type="button" class="chat-history-item" data-chat="3">
+            <span class="chat-history-label">Landing page headlines for Growth PM</span>
+            <span class="chat-history-meta">Jan 26</span>
+          </button>
+          <button type="button" class="chat-history-item" data-chat="4">
+            <span class="chat-history-label">Waste findings summary</span>
+            <span class="chat-history-meta">Jan 25</span>
+          </button>
+          <button type="button" class="chat-history-item" data-chat="5">
+            <span class="chat-history-label">Negative keyword suggestions</span>
+            <span class="chat-history-meta">Jan 24</span>
+          </button>
+        </div>
+        <div class="chat-history-footer muted">Select a conversation to view or continue.</div>
+      </aside>
+      <div class="chat-shell">
+      <div class="chat-header">
+        <div class="muted">
+          <strong>Project context:</strong> Nimbus Clinics – UAE · Healthcare Services · $8k budget · 3 competitors · 2 personas
+        </div>
+      </div>
+      <div class="chat-body">
+        <div class="chat-msg bot">
+          <div class="muted">Assistant</div>
+          <div>Hello! I can help you understand your Google Ads performance, competitors, personas, and Campaign Blueprint. What would you like to know?</div>
+        </div>
+        <div class="chat-msg user">
+          <div class="muted">You</div>
+          <div>What are the main weaknesses in our competitor positioning?</div>
+        </div>
+        <div class="chat-msg bot">
+          <div class="muted">Assistant</div>
+          <div>Based on your competitor analysis, here are the main positioning gaps:
+
+1. <strong>FlowSprint</strong> focuses on speed but lacks depth. You can emphasize "fast setup with deep customization."
+
+2. <strong>ActivateHQ</strong> is analytics-heavy but doesn't emphasize action. Position as "analytics that drive action, not just reporting."
+
+3. <strong>Trailpath</strong> offers templates but they're static. Highlight your AI-powered personalization vs their one-size-fits-all approach.
+
+Would you like me to generate ad copy that addresses these gaps?</div>
+        </div>
+        <div class="chat-msg user">
+          <div class="muted">You</div>
+          <div>What landing page headline should we test first for the Growth PM persona?</div>
+        </div>
+        <div class="chat-msg bot">
+          <div class="muted">Assistant</div>
+          <div>For the Growth PM persona (pain: low activation rate, desire: faster onboarding wins), I recommend:
+
+<strong>Primary:</strong> "Activate users in days, not weeks"
+- Matches their speed need
+- Outcome-focused (activation)
+
+<strong>Alternative:</strong> "Boost activation rate with AI-guided onboarding"
+- Directly addresses their pain point
+- Highlights AI differentiator
+
+Both headlines align with their search behavior ("improve activation rate", "user onboarding best practices"). Test the first one as primary since it's more emotional and outcome-driven.</div>
+        </div>
+        <div class="chat-msg user">
+          <div class="muted">You</div>
+          <div>How should we allocate budget across campaigns?</div>
+        </div>
+        <div class="chat-msg bot">
+          <div class="muted">Assistant</div>
+          <div>Based on your current Campaign Blueprint and $8k monthly budget:
+
+<strong>Recommended allocation:</strong>
+- Core Intent (high-intent research): 60% ($4,800) - Largest opportunity, proven intent
+- High Intent (transactional): 30% ($2,400) - Lower volume but higher conversion
+- Retargeting: 10% ($800) - Efficient, lower CPA
+
+<strong>Rationale:</strong>
+- Core Intent has the most search volume and aligns with your personas' research behavior
+- High Intent captures ready-to-buy users but has lower volume
+- Retargeting is efficient but limited by audience size
+
+Would you like me to adjust this based on specific goals?</div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input class="input" id="chatInput" placeholder="Ask about your Campaign Blueprint, competitors, campaigns, or personas..." />
+        <button class="btn primary" onclick="handleChatSend()">Send</button>
+      </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function handleChatSend() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
+
+  // Mock: Add user message to chat
+  const chatBody = document.querySelector('#ai-chat .chat-body');
+  const userMsg = document.createElement('div');
+  userMsg.className = 'chat-msg user';
+  userMsg.innerHTML = `
+    <div class="muted">You</div>
+    <div>${message}</div>
+  `;
+  chatBody.appendChild(userMsg);
+  input.value = '';
+
+  // Mock: Add bot response
+  setTimeout(() => {
+    const botMsg = document.createElement('div');
+    botMsg.className = 'chat-msg bot';
+    botMsg.innerHTML = `
+      <div class="muted">Assistant</div>
+      <div>Wireframe: This would call the AI API with project context and return a response.</div>
+    `;
+    chatBody.appendChild(botMsg);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }, 500);
+
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+// Chat history: switch active conversation (wireframe)
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleChatSend();
+      }
+    });
+  }
+  const historyItems = document.querySelectorAll('#ai-chat .chat-history-item');
+  historyItems.forEach((el) => {
+    el.addEventListener('click', () => {
+      historyItems.forEach((i) => i.classList.remove('active'));
+      el.classList.add('active');
+      el.setAttribute('aria-current', 'true');
+      el.closest('.chat-history-list').querySelectorAll('.chat-history-item').forEach((i) => {
+        if (i !== el) i.removeAttribute('aria-current');
+      });
+      // Wireframe: could load conversation content here
+    });
+  });
+});
+</script>

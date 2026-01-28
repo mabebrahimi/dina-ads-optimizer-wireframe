@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login – Ads Optimizer</title>
+  <link rel="stylesheet" href="assets/css/wireframe.css" />
+  <style>
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      padding: 20px;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+    }
+    .login-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .login-title {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      margin: 0 0 8px;
+    }
+    .login-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      margin: 0 0 24px;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .login-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0;
+    }
+    .login-divider::before,
+    .login-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+    .login-divider span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .login-footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo">
+          <div class="login-title">Ads Optimizer</div>
+          <div class="login-subtitle">AI-powered Google Ads intelligence</div>
+        </div>
+        
+        <form class="login-form" onsubmit="handleLogin(event)">
+          <input 
+            class="input" 
+            type="email" 
+            placeholder="Email" 
+            aria-label="Email" 
+            required 
+          />
+          <input 
+            class="input" 
+            type="password" 
+            placeholder="Password" 
+            aria-label="Password" 
+            required 
+          />
+          <button type="submit" class="btn primary" style="width: 100%;">
+            Sign in
+          </button>
+        </form>
+
+        <div class="login-divider">
+          <span>or</span>
+        </div>
+
+        <button class="btn" style="width: 100%;" onclick="handleGoogleLogin()">
+          Continue with Google
+        </button>
+
+        <div class="login-footer">
+          By continuing, you accept the platform terms and privacy policy.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleLogin(e) {
+      e.preventDefault();
+      // Mock login - redirect to dashboard
+      window.location.href = 'index.html#dashboard';
+    }
+
+    function handleGoogleLogin() {
+      // Mock Google login - redirect to dashboard
+      window.location.href = 'index.html#dashboard';
+    }
+  </script>
+</body>
+</html>

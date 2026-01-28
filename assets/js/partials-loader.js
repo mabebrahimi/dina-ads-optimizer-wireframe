@@ -1,8 +1,12 @@
 const pageOrder = [
   'dashboard',
+  'new-project',
   'insights',
   'campaign-detail',
   'waste-detail',
+  'competitors',
+  'campaign-blueprint',
+  'ai-chat',
   'action',
   'task-guide',
   'task-apply',

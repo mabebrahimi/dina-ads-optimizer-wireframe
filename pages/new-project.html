@@ -1,0 +1,198 @@
+<section class="page" id="new-project" aria-label="New project wizard">
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center;">
+      <div>
+        <div class="h2">Create Your First Project</div>
+        <div class="muted">Outcome-first setup. Define success, map the market, then generate your Campaign Blueprint.</div>
+      </div>
+      <div class="muted" data-step-indicator>Step 1 of 4</div>
+    </div>
+    <div class="divider"></div>
+    <div class="gtm-wizard" data-gtm-wizard>
+      <div class="gtm-steps">
+        <button class="gtm-step active" data-step="1">1. Define success</button>
+        <button class="gtm-step" data-step="2">2. Project context</button>
+        <button class="gtm-step" data-step="3">3. Market map</button>
+        <button class="gtm-step" data-step="4">4. Personas & intent</button>
+      </div>
+
+      <div class="gtm-step-panels">
+        <div class="gtm-step-panel active" data-step-panel="1" data-next-label="Continue to context">
+          <div class="step-header">
+            <div>
+              <div class="step-title">Define success (required)</div>
+              <div class="muted">These inputs drive every insight and recommendation.</div>
+            </div>
+            <div class="step-tags">
+              <span class="pill-tag">Required</span>
+              <span class="pill-tag">User provided</span>
+            </div>
+          </div>
+          <div class="grid2">
+            <div>
+              <div class="muted">Project Name <span class="required-badge">Required</span></div>
+              <input class="input" placeholder="e.g., Nova CRM" data-required />
+            </div>
+            <div>
+              <div class="muted">Project Type <span class="required-badge">Required</span></div>
+              <select class="input" data-required>
+                <option value="">Select a type</option>
+                <option>SaaS</option>
+                <option>App</option>
+                <option>Ecommerce</option>
+                <option>Marketplace</option>
+              </select>
+            </div>
+            <div>
+              <div class="muted">Target Market <span class="required-badge">Required</span></div>
+              <input class="input" placeholder="United States / UAE / UK" data-required />
+            </div>
+            <div>
+              <div class="muted">Monthly Budget <span class="required-badge">Required</span></div>
+              <input class="input" placeholder="$4,000" data-required />
+            </div>
+            <div>
+              <div class="muted">Primary Success Metric <span class="required-badge">Required</span></div>
+              <select class="input" data-required>
+                <option value="">Select a metric</option>
+                <option>Qualified leads</option>
+                <option>Revenue</option>
+                <option>Bookings</option>
+                <option>Free trials</option>
+              </select>
+            </div>
+            <div>
+              <div class="muted">Launch Timeline</div>
+              <select class="input">
+                <option>Now / Already running</option>
+                <option>2–4 weeks</option>
+                <option>1–2 months</option>
+                <option>3+ months</option>
+              </select>
+            </div>
+          </div>
+          <div class="wizard-callout">
+            <strong>Outcome:</strong> A clear project brief that powers evidence-backed insights and actions.
+          </div>
+          <div class="step-error" data-step-error>Complete required fields to continue.</div>
+        </div>
+
+        <div class="gtm-step-panel" data-step-panel="2" data-next-label="Continue to market map">
+          <div class="step-header">
+            <div>
+              <div class="step-title">Project context (required)</div>
+              <div class="muted">Describe the product, target audience, and differentiator.</div>
+            </div>
+            <div class="step-tags">
+              <span class="pill-tag">Required</span>
+              <span class="pill-tag">Source: You</span>
+            </div>
+          </div>
+          <textarea class="input textarea" rows="6" placeholder="We help early-stage SaaS teams automate user onboarding with AI-guided flows. Our differentiator is fast setup and better activation rates." data-required></textarea>
+          <div class="row" style="gap:8px; margin-top:10px;">
+            <button class="btn">Save Draft</button>
+            <button class="btn primary">AI: Draft positioning summary</button>
+            <button class="btn link" data-step-action="next">Continue without AI</button>
+          </div>
+          <div class="divider"></div>
+          <div class="ai-block">
+            <div class="row" style="justify-content:space-between; align-items:center;">
+              <div class="muted">AI output (optional)</div>
+              <span class="pill-tag">Source: Project description</span>
+            </div>
+            <div class="code-block">
+              <div class="muted">Positioning summary (placeholder)</div>
+              <pre>Nova CRM helps early-stage SaaS teams reduce onboarding drop-off with AI-guided flows and rapid setup.</pre>
+            </div>
+          </div>
+          <div class="step-error" data-step-error>Complete the description to continue.</div>
+        </div>
+
+        <div class="gtm-step-panel" data-step-panel="3" data-next-label="Continue to personas">
+          <div class="step-header">
+            <div>
+              <div class="step-title">Market map (optional)</div>
+              <div class="muted">Competitors help us interpret waste vs opportunity signals.</div>
+            </div>
+            <div class="step-tags">
+              <span class="pill-tag">Optional</span>
+              <span class="pill-tag">Source: AI + You</span>
+            </div>
+          </div>
+          <div class="row" style="justify-content:space-between; align-items:center;">
+            <div>
+              <div class="muted">AI Action: Generate 3–5 competitors</div>
+              <div class="muted">Source: Project description</div>
+            </div>
+            <button class="btn primary">AI: Find competitors</button>
+          </div>
+          <div class="divider"></div>
+          <div class="code-block">
+            <div class="muted">AI JSON output</div>
+            <pre>[
+  { "name": "FlowSprint", "focus": "Automated onboarding", "positioning": "Fast setup" },
+  { "name": "ActivateHQ", "focus": "Activation analytics", "positioning": "Deep product usage insights" },
+  { "name": "Trailpath", "focus": "Onboarding templates", "positioning": "Pre-built playbooks" }
+]</pre>
+          </div>
+          <div class="divider"></div>
+          <div class="row" style="gap:8px; align-items:center;">
+            <input class="input" placeholder="Add competitor manually" />
+            <button class="btn">Add</button>
+            <button class="btn link" data-step-action="next">Skip for now</button>
+          </div>
+          <div class="chip-row">
+            <span class="chip">FlowSprint</span>
+            <span class="chip">ActivateHQ</span>
+            <span class="chip">Trailpath</span>
+          </div>
+        </div>
+
+        <div class="gtm-step-panel" data-step-panel="4" data-next-label="Create project">
+          <div class="step-header">
+            <div>
+              <div class="step-title">Personas & intent (optional)</div>
+              <div class="muted">We use this to shape decision-first insights and actions.</div>
+            </div>
+            <div class="step-tags">
+              <span class="pill-tag">Optional</span>
+              <span class="pill-tag">Source: Project + market map</span>
+            </div>
+          </div>
+          <div class="row" style="justify-content:space-between; align-items:center;">
+            <div>
+              <div class="muted">AI Action: Generate buyer personas</div>
+              <div class="muted">Source: Project + competitor set</div>
+            </div>
+            <button class="btn primary">AI: Create personas</button>
+          </div>
+          <div class="divider"></div>
+          <div class="persona-grid">
+            <div class="persona-card">
+              <div class="persona-title">Growth PM</div>
+              <div class="muted">Pain: Low activation rate</div>
+              <div class="muted">Desire: Faster onboarding wins</div>
+              <div class="muted">Search behavior: "improve activation rate", "user onboarding best practices"</div>
+            </div>
+            <div class="persona-card">
+              <div class="persona-title">Head of Marketing</div>
+              <div class="muted">Pain: High CAC</div>
+              <div class="muted">Desire: Better conversion without more spend</div>
+              <div class="muted">Search behavior: "onboarding conversion", "product activation funnel"</div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="wizard-callout">
+            <strong>Outcome:</strong> A decision-first Campaign Blueprint with evidence-backed actions.
+          </div>
+          <button class="btn primary" onclick="alert('Wireframe: Project created. Redirecting to dashboard...')">Create Project & Generate Campaign Blueprint</button>
+        </div>
+      </div>
+
+      <div class="wizard-actions">
+        <button class="btn" data-step-action="prev">Back</button>
+        <button class="btn primary" data-step-action="next">Next</button>
+      </div>
+    </div>
+  </div>
+</section>
