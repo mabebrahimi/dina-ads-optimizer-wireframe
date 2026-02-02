@@ -51,10 +51,34 @@
 
     <div class="card">
       <div class="row" style="align-items:center; justify-content:space-between;">
-        <div class="h2">Insights</div>
-        <div class="muted">Grouped for this campaign</div>
+        <div>
+          <div class="h2">Insights</div>
+          <div class="muted">Campaign overview for fast triage. Open a campaign to see full insight details.</div>
+        </div>
+        <div class="row" style="justify-content:flex-end;">
+          <select class="input" aria-label="Type" id="campaignDetailTypeFilter">
+            <option selected>All types</option>
+            <option>Waste</option>
+            <option>Tracking</option>
+            <option>Opportunity</option>
+            <option>Alerts</option>
+          </select>
+          <select class="input" aria-label="Severity" id="campaignDetailSeverityFilter">
+            <option selected>All severity</option>
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+          <select class="input" aria-label="Sort" id="campaignDetailSortFilter">
+            <option selected>Sort: Impact</option>
+            <option>Sort: Confidence</option>
+            <option>Sort: Newest</option>
+          </select>
+        </div>
       </div>
       <div class="divider"></div>
+      <div class="muted" id="campaignDetailInsightsSummaryLine">Showing insights.</div>
+      <div class="divider" style="margin-top:10px;"></div>
       <div class="list" id="campaignInsightsList"></div>
     </div>
   </div>

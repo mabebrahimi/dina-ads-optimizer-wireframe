@@ -403,6 +403,40 @@ const campaignOverview = {
   }
 };
 
+const adGroupOverview = {
+  'Core Services': {
+    'Filler – Generic': {
+      status: 'Needs attention',
+      summary: 'Waste concentrated in research-intent traffic for this ad group.',
+      spend: '$7.9k',
+      leads: '12',
+      cpl: '$658',
+      trendLabel: 'Leads (last 7 days)',
+      trend: [0, 2, 1, 0, 2, 4, 3]
+    },
+    'Filler – Near Me': {
+      status: 'Stable',
+      summary: 'Higher intent mix. Main lever is incremental rank without hurting CPL.',
+      spend: '$4.5k',
+      leads: '30',
+      cpl: '$150',
+      trendLabel: 'Leads (last 7 days)',
+      trend: [3, 3, 3, 2, 4, 3, 3]
+    }
+  },
+  'Botox': {
+    'Botox – Generic': {
+      status: 'Growth opportunity',
+      summary: 'Losing impression share on high-intent terms. Rank is the constraint.',
+      spend: '$6.1k',
+      leads: '31',
+      cpl: '$197',
+      trendLabel: 'Leads (last 7 days)',
+      trend: [2, 4, 3, 4, 5, 6, 7]
+    }
+  }
+};
+
 function renderInsightsByCampaign(){
   const container = document.getElementById('campaignsList');
   if(!container) return;
@@ -500,6 +534,10 @@ function renderInsightsByCampaign(){
     ...Object.keys(insightsByCampaign || {})
   ]));
 
+  // Selecting a campaign/ad group in Insights navigates to campaign-detail (Google Ads-like scope change),
+  // so the Insights page stays as campaign cards only.
+  container.classList.remove('insights-scope-list');
+
   const campaigns = campaignNames.map(name => {
     const raw = insightsByCampaign[name] || [];
     const filtered = applyFilters(raw);
@@ -529,6 +567,7 @@ function renderInsightsByCampaign(){
 
   if(summaryLine){
     const suffixParts = [];
+    suffixParts.push('Scope: All campaigns');
     if(selectedType !== 'All types') suffixParts.push(`Type: ${selectedType}`);
     if(selectedSeverity !== 'All severity') suffixParts.push(`Severity: ${selectedSeverity}`);
     if(selectedSort) suffixParts.push(selectedSort);
@@ -1022,8 +1061,10 @@ function toggleCampaign(headerEl){
 
 window.toggleCampaign = toggleCampaign;
 
-function hydrateCampaignDetail(campaignKey){
-  const data = campaignOverview[campaignKey] || campaignOverview['Core Services'];
+function hydrateCampaignDetail(campaignKey, adGroupKey){
+  const hasAdGroup = Boolean(adGroupKey && String(adGroupKey).trim());
+  const adGroupData = hasAdGroup ? (adGroupOverview?.[campaignKey]?.[adGroupKey] || null) : null;
+  const data = adGroupData || campaignOverview[campaignKey] || campaignOverview['Core Services'];
   const titleEl = document.getElementById('campaignDetailTitle');
   const statusEl = document.getElementById('campaignDetailStatus');
   const summaryEl = document.getElementById('campaignDetailSummary');
@@ -1033,10 +1074,9 @@ function hydrateCampaignDetail(campaignKey){
   const chartLabel = document.getElementById('campaignChartLabel');
   const chartPath = document.getElementById('campaignLinePath');
   const chartDots = document.getElementById('campaignLineDots');
-  const insightsList = document.getElementById('campaignInsightsList');
 
-  if(titleEl) titleEl.textContent = campaignKey;
-  if(statusEl) statusEl.textContent = data.status || 'Status';
+  if(titleEl) titleEl.textContent = hasAdGroup ? `${campaignKey} · ${adGroupKey}` : campaignKey;
+  if(statusEl) statusEl.textContent = data.status || (hasAdGroup ? 'Ad group status' : 'Status');
   if(summaryEl) summaryEl.textContent = data.summary || '';
   if(kpiSpend) kpiSpend.textContent = data.spend || '—';
   if(kpiLeads) kpiLeads.textContent = data.leads || '—';
@@ -1070,10 +1110,146 @@ function hydrateCampaignDetail(campaignKey){
     });
   }
 
-  if(insightsList){
-    const insights = insightsByCampaign[campaignKey] || [];
-    insightsList.innerHTML = insights.map(ins => renderInsightCardHTML(ins)).join('');
+  renderCampaignDetailInsights(campaignKey, adGroupKey);
+}
+
+function hydrateGlobalScopeBar(){
+  const campaignSel = document.getElementById('globalCampaignFilter');
+  const adGroupSel = document.getElementById('globalAdGroupFilter');
+  const summaryTag = document.getElementById('scopeSummaryTag');
+  if(!campaignSel || !adGroupSel) return;
+
+  const { page, params } = parseHash();
+  const pageCampaign = params.get('campaign') || '';
+  const pageAdGroup = params.get('adGroup') || '';
+
+  const campaignNames = Array.from(new Set([
+    ...Object.keys(campaignOverview || {}),
+    ...Object.keys(insightsByCampaign || {})
+  ])).sort((a,b) => String(a).localeCompare(String(b)));
+
+  const desiredCampaign = page === 'campaign-detail'
+    ? (campaignNames.includes(pageCampaign) ? pageCampaign : (campaignNames[0] || 'Core Services'))
+    : 'All campaigns';
+
+  const currentCampaign = campaignSel.value || 'All campaigns';
+  if(campaignSel.options.length <= 1 || currentCampaign !== desiredCampaign){
+    campaignSel.innerHTML = '';
+    const allOpt = document.createElement('option');
+    allOpt.textContent = 'All campaigns';
+    allOpt.value = 'All campaigns';
+    campaignSel.appendChild(allOpt);
+    campaignNames.forEach(name => {
+      const opt = document.createElement('option');
+      opt.textContent = name;
+      opt.value = name;
+      campaignSel.appendChild(opt);
+    });
+    campaignSel.value = desiredCampaign;
+  } else {
+    campaignSel.value = desiredCampaign;
   }
+
+  adGroupSel.innerHTML = '';
+  const allAg = document.createElement('option');
+  allAg.textContent = 'All ad groups';
+  allAg.value = 'All ad groups';
+  adGroupSel.appendChild(allAg);
+
+  if(desiredCampaign === 'All campaigns'){
+    adGroupSel.disabled = true;
+    adGroupSel.value = 'All ad groups';
+    return;
+  }
+
+  const agSet = new Set();
+  (insightsByCampaign[desiredCampaign] || []).forEach(ins => {
+    const ag = ins?.source?.adGroup;
+    if(!ag || ag === '—') return;
+    agSet.add(ag);
+  });
+  Object.keys(adGroupOverview?.[desiredCampaign] || {}).forEach(ag => agSet.add(ag));
+  Array.from(agSet).sort((a,b) => String(a).localeCompare(String(b))).forEach(ag => {
+    const opt = document.createElement('option');
+    opt.textContent = ag;
+    opt.value = ag;
+    adGroupSel.appendChild(opt);
+  });
+
+  adGroupSel.disabled = false;
+  if(page === 'campaign-detail' && pageAdGroup && agSet.has(pageAdGroup)){
+    adGroupSel.value = pageAdGroup;
+  } else {
+    adGroupSel.value = 'All ad groups';
+  }
+
+  if(summaryTag){
+    const c = campaignSel.value || 'All campaigns';
+    const ag = adGroupSel.value || 'All ad groups';
+    summaryTag.textContent = (c === 'All campaigns') ? 'All campaigns' : (ag === 'All ad groups' ? `${c} · all ad groups` : `${c} · ${ag}`);
+  }
+}
+
+function renderCampaignDetailInsights(campaignKey, adGroupKey){
+  const insightsList = document.getElementById('campaignInsightsList');
+  if(!insightsList) return;
+
+  const typeSel = document.getElementById('campaignDetailTypeFilter');
+  const sevSel = document.getElementById('campaignDetailSeverityFilter');
+  const sortSel = document.getElementById('campaignDetailSortFilter');
+  const summaryLine = document.getElementById('campaignDetailInsightsSummaryLine');
+
+  const selectedCampaign = campaignKey;
+  const selectedAdGroup = adGroupKey ? String(adGroupKey) : 'All ad groups';
+  const selectedType = typeSel?.value || 'All types';
+  const selectedSeverity = sevSel?.value || 'All severity';
+  const selectedSort = sortSel?.value || 'Sort: Impact';
+
+  const normalizeConfidenceLocal = (c) => {
+    const n = typeof c === 'number' ? c : parseFloat(String(c || '').trim());
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const applyFilters = (insights) => (insights || []).filter(i => {
+    const okAdGroup = (selectedAdGroup === 'All ad groups') || (i?.source?.adGroup === selectedAdGroup);
+    const okType = (selectedType === 'All types') || i.type === selectedType;
+    const okSev = (selectedSeverity === 'All severity') || i.severity === selectedSeverity;
+    return okAdGroup && okType && okSev;
+  });
+
+  const applySort = (insights) => {
+    const list = [...(insights || [])];
+    if(selectedSort === 'Sort: Confidence'){
+      list.sort((a,b) => normalizeConfidenceLocal(b.confidence) - normalizeConfidenceLocal(a.confidence));
+      return list;
+    }
+    if(selectedSort === 'Sort: Newest'){
+      list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+      return list;
+    }
+    list.sort((a,b) => (b.impactScore || 0) - (a.impactScore || 0));
+    return list;
+  };
+
+  const insights = insightsByCampaign[selectedCampaign] || [];
+  const filtered = applyFilters(insights);
+  const sorted = applySort(filtered);
+
+  if(summaryLine){
+    const scope = selectedAdGroup !== 'All ad groups'
+      ? `${selectedCampaign} · ${selectedAdGroup}`
+      : `${selectedCampaign} (all ad groups)`;
+    const suffixParts = [];
+    suffixParts.push(`Scope: ${scope}`);
+    if(selectedType !== 'All types') suffixParts.push(`Type: ${selectedType}`);
+    if(selectedSeverity !== 'All severity') suffixParts.push(`Severity: ${selectedSeverity}`);
+    if(selectedSort) suffixParts.push(selectedSort);
+    summaryLine.textContent = `Showing ${sorted.length} insight${sorted.length !== 1 ? 's' : ''}. (${suffixParts.join(' · ')})`;
+  }
+
+  insightsList.innerHTML = sorted.length
+    ? sorted.map(ins => renderInsightCardHTML(ins)).join('')
+    : `<div class="note">No insights match this scope.</div>`;
 }
 
 // ----- Task guide/apply hydration (fake but meaningful) -----
@@ -1515,6 +1691,9 @@ function hydrate(){
   const { page, params } = parseHash();
   setActive(page);
 
+  // Global scope bar (Google Ads-like): campaign/ad group selectors persist across pages
+  hydrateGlobalScopeBar();
+
   // Campaign Blueprint: project-dependent UI
   hydrateCampaignBlueprint();
 
@@ -1543,7 +1722,8 @@ function hydrate(){
   // Campaign detail
   if(page === 'campaign-detail'){
     const campaign = params.get('campaign') || 'Core Services';
-    hydrateCampaignDetail(campaign);
+    const adGroup = params.get('adGroup') || '';
+    hydrateCampaignDetail(campaign, adGroup);
   }
 }
 
@@ -1647,8 +1827,28 @@ function bootstrapWireframe(){
     if(e.target && e.target.id === 'projectSelect'){
       hydrate();
     }
+    if(e.target && e.target.id === 'globalCampaignFilter'){
+      const campaign = e.target.value || 'All campaigns';
+      if(campaign === 'All campaigns') return go('insights');
+      return go('campaign-detail', { campaign });
+    }
+    if(e.target && e.target.id === 'globalAdGroupFilter'){
+      const campaign = (document.getElementById('globalCampaignFilter')?.value) || 'All campaigns';
+      const adGroup = e.target.value || 'All ad groups';
+      if(campaign === 'All campaigns') return go('insights');
+      if(adGroup === 'All ad groups') return go('campaign-detail', { campaign });
+      return go('campaign-detail', { campaign, adGroup });
+    }
     if(e.target && (e.target.id === 'insightsTypeFilter' || e.target.id === 'insightsSeverityFilter' || e.target.id === 'insightsSortFilter')){
       renderInsightsByCampaign();
+    }
+    if(e.target && (e.target.id === 'campaignDetailTypeFilter' || e.target.id === 'campaignDetailSeverityFilter' || e.target.id === 'campaignDetailSortFilter')){
+      const { page, params } = parseHash();
+      if(page === 'campaign-detail'){
+        const campaign = params.get('campaign') || 'Core Services';
+        const adGroup = params.get('adGroup') || '';
+        renderCampaignDetailInsights(campaign, adGroup);
+      }
     }
     if(e.target && (e.target.id === 'dashTypeFilter' || e.target.id === 'dashLimitFilter')){
       renderDashboard();

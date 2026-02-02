@@ -61,6 +61,23 @@
           <button class="btn primary" onclick="alert('Wireframe: Refresh would sync + recompute insights.')">Refresh</button>
         </div>
       </div>
+
+      <div class="scopebar" aria-label="Scope bar">
+        <div class="row" style="align-items:center; justify-content:space-between;">
+          <div class="scopebar-left">
+            <div class="scopebar-title">Scope</div>
+            <span class="tag" id="scopeSummaryTag">All campaigns</span>
+          </div>
+          <div class="row" style="justify-content:flex-end;">
+            <select class="input" aria-label="Campaign" id="globalCampaignFilter">
+              <option selected>All campaigns</option>
+            </select>
+            <select class="input" aria-label="Ad group" id="globalAdGroupFilter" disabled>
+              <option selected>All ad groups</option>
+            </select>
+          </div>
+        </div>
+      </div>
       <div id="pages"></div>
 
       <div class="note">Notes: “Estimated Waste” is model-based. Always review evidence before applying changes.</div>
